@@ -21,6 +21,19 @@ const background = {
     }
 }
 
+//Foreground
+const foreground = {
+    sX : 552,
+    sY : 576,
+    sW : 448,
+    sH : 224,
+
+    draw : function() {
+        ctx.drawImage(sprite_sheet, this.sX, this.sY, this.sW, this.sH, this.x, this.y, this.w, this.h);
+        ctx.drawImage(sprite_sheet, this.sX, this.sY, this.sW, this.sH, (this.x + this.w), this.y, this.w, this.h);
+    },
+}
+
 //Draw
 function draw() {
     //Background color
@@ -28,17 +41,25 @@ function draw() {
     ctx.fillRect(0, 0, cvs.width, cvs.height); 
 
     background.draw();
+    foreground.draw();
 }
 
 function adjustCanvas() {
     //Get canvas height and width
     cvs.height = window.innerHeight - 2;
-    cvs.width = cvs.height / 1.388 - 2;
-    //Get background measurements in cavnas
+    cvs.width  = cvs.height * 0.72 - 2;
+
+    //Get background measurements for canvas
     background.x = 0;
-    background.y = cvs.height - (cvs.width/1.35) / 1.5;
+    background.y = cvs.height * 0.631;
     background.w = cvs.width;
-    background.h = background.w / 1.35;
+    background.h = background.w * 0.74;
+
+    //Get foreground measurements for canvas
+    foreground.x = 0;
+    foreground.y = cvs.height * 0.861;
+    foreground.w = cvs.width * 0.7;
+    foreground.h = foreground.w * 0.46;
 }
 
 //When window loads or resize
