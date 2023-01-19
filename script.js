@@ -1,50 +1,76 @@
-//Select Canvas
+//SELECT CANVAS
 const cvs = document.getElementById("canvas");
 const ctx = cvs.getContext("2d");
 
-//Game variables and constants
+//GAME VARIABLES AND CONSTANTS
 let frames = 0;
 
-//Load sprite sheet
+//LOAD SPRITE SHEET
 const sprite_sheet = new Image();
 sprite_sheet.src = "img/sprite_sheet.png"
 
-//Background
-const background = {
-    sX : 0,
-    sY : 392,
-    sW : 552,
-    sH : 408,
+//BACKGROUND
+const background = 
+{
+    spriteX : 0,
+    spriteY : 392,
+    spriteW : 552,
+    spriteH : 408,
 
-    draw : function() {
-        ctx.drawImage(sprite_sheet, this.sX, this.sY, this.sW, this.sH, this.x, this.y, this.w, this.h);
+    draw : function() 
+    {
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.spriteX, this.spriteY, 
+                        this.spriteW, this.spriteH, 
+                        this.x, this.y, 
+                        this.w, this.h
+                     );
     }
 }
 
-//Foreground
-const foreground = {
-    sX : 552,
-    sY : 576,
-    sW : 448,
-    sH : 224,
+//FOREGROUND
+const foreground = 
+{
+    spriteX : 552,
+    spriteY : 576,
+    spriteW : 448,
+    spriteH : 224,
 
-    draw : function() {
-        ctx.drawImage(sprite_sheet, this.sX, this.sY, this.sW, this.sH, this.x, this.y, this.w, this.h);
-        ctx.drawImage(sprite_sheet, this.sX, this.sY, this.sW, this.sH, (this.x + this.w), this.y, this.w, this.h);
+    dx : 0,
+
+    draw : function() 
+    {
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.spriteX, this.spriteY, 
+                        this.spriteW, this.spriteH, 
+                        this.x, this.y, 
+                        this.w, this.h
+                     );
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.spriteX, this.spriteY, 
+                        this.spriteW, this.spriteH, 
+                        (this.x + this.w), this.y, 
+                        this.w, this.h
+                     );
     },
 }
 
-//Draw
-function draw() {
-    //Background color
-    ctx.fillStyle = "#7BC5CD";
+//DRAW
+function draw() 
+{
+    //Background color of canvas 
+    ctx.fillStyle = "#7BC5CD"; 
     ctx.fillRect(0, 0, cvs.width, cvs.height); 
 
     background.draw();
     foreground.draw();
 }
 
-function adjustCanvas() {
+function adjustCanvas() 
+{
     //Get canvas height and width
     cvs.height = window.innerHeight - 2;
     cvs.width  = cvs.height * 0.72 - 2;
@@ -68,13 +94,15 @@ window.addEventListener("load", () => {
     window.addEventListener("resize", adjustCanvas);
 });
 
-//Update 
-function update() {
+//UPDATE
+function update() 
+{
 
 }
 
-//Loop
-function loop() {
+//LOOP
+function loop() 
+{
     update();
     draw();
     frames++;
