@@ -58,6 +58,32 @@ const foreground =
     },
 }
 
+//BIRD
+const bird = 
+{
+    animation : [
+        {spriteX: 932, spriteY: 432, spriteW: 68, spriteH: 47},
+        {spriteX: 932, spriteY: 480, spriteW: 68, spriteH: 47},
+        {spriteX: 932, spriteY: 528, spriteW: 68, spriteH: 47}
+    ],
+
+    frame : 0,
+
+    draw : function() 
+    {
+        let bird = this.animation[this.frame];
+        { 
+            ctx.drawImage(
+                            sprite_sheet, 
+                            bird.spriteX, bird.spriteY, 
+                            bird.spriteW, bird.spriteH, 
+                            (this.x - this.w/2), (this.y - this.h/2), 
+                            this.w, this.h
+                         );
+        }
+    },
+}
+
 //DRAW
 function draw() 
 {
@@ -67,8 +93,10 @@ function draw()
 
     background.draw();
     foreground.draw();
+    bird.draw();
 }
 
+//ADJUST CANVAS
 function adjustCanvas() 
 {
     //Get canvas height and width
@@ -86,6 +114,12 @@ function adjustCanvas()
     foreground.y = cvs.height * 0.861;
     foreground.w = cvs.width * 0.7;
     foreground.h = foreground.w * 0.46;
+
+    //Get bird measurements for canvas
+    bird.x = cvs.width * 0.232;
+    bird.y = cvs.height * 0.395;
+    bird.w = cvs.width * 0.117;
+    bird.h = cvs.height * 0.059;
 }
 
 //When window loads or resize
