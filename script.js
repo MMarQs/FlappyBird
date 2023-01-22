@@ -77,11 +77,61 @@ const bird =
                             sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
-                            (this.x - this.w/2), (this.y - this.h/2), 
+                            (this.x - this.w/2), (this.y - this.h/2), //Centering the bird
                             this.w, this.h
+                         );
+            
+            ctx.drawImage(
+                           sprite_sheet, 
+                            bird.spriteX, bird.spriteY, 
+                            bird.spriteW, bird.spriteH, 
+                            (this.x2 - this.w2/2), (this.y2 - this.h2/2),
+                            this.w2, this.h2
                          );
         }
     },
+}
+
+//HOME
+const home = 
+{
+    logo : 
+    {
+        spriteX : 552,
+        spriteY : 236,
+        spriteW : 384,
+        spriteH : 87,
+    },
+
+    studio_name : 
+    {
+        spriteX : 172,
+        spriteY : 284,
+        spriteW : 380,
+        spriteH : 28,
+    },
+
+    //TODO: Animate logo on home state
+
+    draw : function() 
+    {
+        ctx.drawImage
+        (
+            sprite_sheet,
+            this.logo.spriteX, this.logo.spriteY, 
+            this.logo.spriteW, this.logo.spriteH, 
+            this.logo.x, this.logo.y, 
+            this.logo.w, this.logo.h
+        );
+        ctx.drawImage
+        (
+            sprite_sheet, 
+            this.studio_name.spriteX, this.studio_name.spriteY, 
+            this.studio_name.spriteW, this.studio_name.spriteH, 
+            this.studio_name.x, this.studio_name.y, 
+            this.studio_name.w, this.studio_name.h
+        );
+    }
 }
 
 //DRAW
@@ -94,6 +144,7 @@ function draw()
     background.draw();
     foreground.draw();
     bird.draw();
+    home.draw();
 }
 
 //ADJUST CANVAS
@@ -120,6 +171,24 @@ function adjustCanvas()
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
+
+    //Get bird measurements for home screen canvas
+    bird.x2 = cvs.width * 0.861;
+    bird.y2 = cvs.height * 0.321;
+    bird.w2 = cvs.width * 0.117;
+    bird.h2 = cvs.height * 0.059;
+
+    //Logo measurements for canvas
+    home.logo.x = cvs.width * 0.098;
+    home.logo.y = cvs.height * 0.279;
+    home.logo.w = cvs.width * 0.665;
+    home.logo.h = cvs.height * 0.109; 
+
+    //Studio Name measurements for canvas
+    home.studio_name.x = cvs.width * 0.171;
+    home.studio_name.y = cvs.height * 0.904;
+    home.studio_name.w = cvs.width * 0.659;
+    home.studio_name.h = cvs.height * 0.034; 
 }
 
 //When window loads or resize
