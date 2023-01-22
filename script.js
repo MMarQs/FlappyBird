@@ -111,26 +111,54 @@ const home =
         spriteH : 28,
     },
 
+    start_button : 
+    {
+        spriteX : 388,
+        spriteY : 171,
+        spriteW : 160,
+        spriteH : 56,
+    },
+
+    score_button : 
+    {
+        spriteX : 388,
+        spriteY : 114,
+        spriteW : 160,
+        spriteH : 56,
+    },
+
     //TODO: Animate logo on home state
 
     draw : function() 
     {
-        ctx.drawImage
-        (
+        ctx.drawImage(
             sprite_sheet,
             this.logo.spriteX, this.logo.spriteY, 
             this.logo.spriteW, this.logo.spriteH, 
             this.logo.x, this.logo.y, 
             this.logo.w, this.logo.h
         );
-        ctx.drawImage
-        (
+        ctx.drawImage(
             sprite_sheet, 
             this.studio_name.spriteX, this.studio_name.spriteY, 
             this.studio_name.spriteW, this.studio_name.spriteH, 
             this.studio_name.x, this.studio_name.y, 
             this.studio_name.w, this.studio_name.h
         );
+        ctx.drawImage(
+            sprite_sheet, 
+            this.start_button.spriteX, this.start_button.spriteY, 
+            this.start_button.spriteW, this.start_button.spriteH, 
+            this.start_button.x, this.start_button.y, 
+            this.start_button.w, this.start_button.h
+                     );
+        ctx.drawImage(
+            sprite_sheet, 
+            this.score_button.spriteX, this.score_button.spriteY, 
+            this.score_button.spriteW, this.score_button.spriteH, 
+            this.score_button.x, this.score_button.y, 
+            this.score_button.w, this.score_button.h
+                     );
     }
 }
 
@@ -189,6 +217,18 @@ function adjustCanvas()
     home.studio_name.y = cvs.height * 0.904;
     home.studio_name.w = cvs.width * 0.659;
     home.studio_name.h = cvs.height * 0.034; 
+
+    //Start button measurements for canvas
+    home.start_button.x = cvs.width * 0.147;
+    home.start_button.y = cvs.height * 0.759;
+    home.start_button.w = cvs.width * 0.276;
+    home.start_button.h = cvs.height * 0.068;
+
+    //Score button measurements for canvas
+    home.score_button.x = cvs.width * 0.576;
+    home.score_button.y = cvs.height * 0.759;
+    home.score_button.w = cvs.width * 0.276;
+    home.score_button.h = cvs.height * 0.068;
 }
 
 //When window loads or resize
