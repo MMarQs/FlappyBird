@@ -152,6 +152,7 @@ const home =
             this.start_button.x, this.start_button.y, 
             this.start_button.w, this.start_button.h
                      );
+        /*
         ctx.drawImage(
             sprite_sheet, 
             this.score_button.spriteX, this.score_button.spriteY, 
@@ -159,6 +160,7 @@ const home =
             this.score_button.x, this.score_button.y, 
             this.score_button.w, this.score_button.h
                      );
+        */
     }
 }
 
@@ -219,16 +221,19 @@ function adjustCanvas()
     home.studio_name.h = cvs.height * 0.034; 
 
     //Start button measurements for canvas
-    home.start_button.x = cvs.width * 0.147;
+    home.start_button.x = cvs.width * 0.359;
+    //home.start_button.x = cvs.width * 0.147;
     home.start_button.y = cvs.height * 0.759;
     home.start_button.w = cvs.width * 0.276;
     home.start_button.h = cvs.height * 0.068;
 
+    /*
     //Score button measurements for canvas
     home.score_button.x = cvs.width * 0.576;
     home.score_button.y = cvs.height * 0.759;
     home.score_button.w = cvs.width * 0.276;
     home.score_button.h = cvs.height * 0.068;
+    */
 }
 
 //When window loads or resize
