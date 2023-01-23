@@ -262,6 +262,7 @@ const gameOver =
         spriteH : 56,
     },
 
+    /*
     share_button : 
     {
         spriteX : 388,
@@ -269,6 +270,7 @@ const gameOver =
         spriteW : 160,
         spriteH : 56,
     },
+    */
 
     draw : function() 
     {
@@ -293,6 +295,7 @@ const gameOver =
                         this.ok_button.x, this.ok_button.y, 
                         this.ok_button.w, this.ok_button.h
                      );
+        /*
         ctx.drawImage(
                         sprite_sheet, 
                         this.share_button.spriteX, this.share_button.spriteY, 
@@ -300,6 +303,7 @@ const gameOver =
                         this.share_button.x, this.share_button.y, 
                         this.share_button.w, this.share_button.h
                      );
+        */
     }
 }
 
@@ -408,16 +412,19 @@ function adjustCanvas()
     gameOver.scoreboard.h = cvs.height * 0.289;
 
     //Ok button measurements for canvas
-    gameOver.ok_button.x = cvs.width * 0.147;
+    gameOver.ok_button.x = cvs.width * 0.359;
+    //gameOver.ok_button.x = cvs.width * 0.147;
     gameOver.ok_button.y = cvs.height * 0.759;
     gameOver.ok_button.w = cvs.width * 0.276;
     gameOver.ok_button.h = cvs.height * 0.068;
 
+    /*
     //Share button measurements for canvas
     gameOver.share_button.x = cvs.width * 0.576;
     gameOver.share_button.y = cvs.height * 0.759;
     gameOver.share_button.w = cvs.width * 0.276;
     gameOver.share_button.h = cvs.height * 0.068;
+    */
 }
 
 //When window loads or resize
