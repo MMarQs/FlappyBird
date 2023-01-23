@@ -202,6 +202,39 @@ const getReady =
     }
 }
 
+//PAUSE/RESUME BUTTONS
+const gameButtons = 
+{
+    pause_button : 
+    {
+        spriteX : 388,
+        spriteY : 228,
+        spriteW : 52,
+        spriteH : 56,
+    },
+
+    resume_button : 
+    {
+        spriteX : 441,
+        spriteY : 228,
+        spriteW : 52,
+        spriteH : 56,
+    },
+
+    // TODO: If game is paused change to resume button
+
+    draw : function() 
+    {
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.pause_button.spriteX, this.pause_button.spriteY, 
+                        this.pause_button.spriteW, this.pause_button.spriteH, 
+                        this.x, this.y, 
+                        this.w, this.h
+                     );
+    }
+}
+
 //DRAW
 function draw() 
 {
@@ -214,6 +247,7 @@ function draw()
     bird.draw();
     home.draw();
     getReady.draw();
+    gameButtons.draw();
 }
 
 //ADJUST CANVAS
@@ -285,6 +319,12 @@ function adjustCanvas()
     getReady.tap.y = cvs.height * 0.435;
     getReady.tap.w = cvs.width * 0.270;
     getReady.tap.h = cvs.height * 0.244;
+
+    //Pause button measurements for canvas
+    gameButtons.x = cvs.width * 0.087;
+    gameButtons.y = cvs.height * 0.045;
+    gameButtons.w = cvs.width * 0.088;
+    gameButtons.h = cvs.height * 0.069;  
 }
 
 //When window loads or resize
