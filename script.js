@@ -235,6 +235,44 @@ const gameButtons =
     }
 }
 
+//GAME OVER
+const gameOver = 
+{
+    game_over : 
+    {
+        spriteX : 552,
+        spriteY : 412,
+        spriteW : 376,
+        spriteH : 76,
+    },
+
+    scoreboard : 
+    {
+        spriteX : 548,
+        spriteY : 0,
+        spriteW : 452,
+        spriteH : 232,
+    },
+
+    draw : function() 
+    {
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.game_over.spriteX, this.game_over.spriteY, 
+                        this.game_over.spriteW, this.game_over.spriteH, 
+                        this.game_over.x, this.game_over.y, 
+                        this.game_over.w, this.game_over.h
+                     );
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.scoreboard.spriteX, this.scoreboard.spriteY, 
+                        this.scoreboard.spriteW, this.scoreboard.spriteH, 
+                        this.scoreboard.x, this.scoreboard.y, 
+                        this.scoreboard.w, this.scoreboard.h
+                     );
+    }
+}
+
 //DRAW
 function draw() 
 {
@@ -248,6 +286,7 @@ function draw()
     home.draw();
     getReady.draw();
     gameButtons.draw();
+    gameOver.draw();
 }
 
 //ADJUST CANVAS
@@ -325,6 +364,18 @@ function adjustCanvas()
     gameButtons.y = cvs.height * 0.045;
     gameButtons.w = cvs.width * 0.088;
     gameButtons.h = cvs.height * 0.069;  
+
+    //Game Over Message measurements for canvas
+    gameOver.game_over.x = cvs.width * 0.197;
+    gameOver.game_over.y = cvs.height * 0.243;
+    gameOver.game_over.w = cvs.width * 0.6049;
+    gameOver.game_over.h = cvs.height * 0.095;  
+
+    //Scoreboard measurements for canvas
+    gameOver.scoreboard.x = cvs.width * 0.107;
+    gameOver.scoreboard.y = cvs.height * 0.355;
+    gameOver.scoreboard.w = cvs.width * 0.782;
+    gameOver.scoreboard.h = cvs.height * 0.289;
 }
 
 //When window loads or resize
