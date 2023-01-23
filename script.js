@@ -164,6 +164,44 @@ const home =
     }
 }
 
+//GET READY MESSAGE
+const getReady = 
+{
+    get_ready : 
+    {
+        spriteX : 552,
+        spriteY : 324,
+        spriteW : 348,
+        spriteH : 88,
+    },
+
+    tap : 
+    {
+        spriteX : 232,
+        spriteY : 0,
+        spriteW : 155,
+        spriteH : 196,
+    },
+
+    draw : function() 
+    {
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.get_ready.spriteX, this.get_ready.spriteY, 
+                            this.get_ready.spriteW, this.get_ready.spriteH, 
+                            this.get_ready.x, this.get_ready.y,
+                            this.get_ready.w, this.get_ready.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.tap.spriteX, this.tap.spriteY, 
+                            this.tap.spriteW, this.tap.spriteH, 
+                            this.tap.x, this.tap.y,
+                            this.tap.w, this.tap.h
+                         );
+    }
+}
+
 //DRAW
 function draw() 
 {
@@ -175,6 +213,7 @@ function draw()
     foreground.draw();
     bird.draw();
     home.draw();
+    getReady.draw();
 }
 
 //ADJUST CANVAS
@@ -234,6 +273,18 @@ function adjustCanvas()
     home.score_button.w = cvs.width * 0.276;
     home.score_button.h = cvs.height * 0.068;
     */
+
+    //Get Ready Message measurements for canvas
+    getReady.get_ready.x = cvs.width * 0.197;
+    getReady.get_ready.y = cvs.height * 0.206;
+    getReady.get_ready.w = cvs.width * 0.602;
+    getReady.get_ready.h = cvs.height * 0.109;  
+
+    //Tap measurements for canvas
+    getReady.tap.x = cvs.width * 0.433;
+    getReady.tap.y = cvs.height * 0.435;
+    getReady.tap.w = cvs.width * 0.270;
+    getReady.tap.h = cvs.height * 0.244;
 }
 
 //When window loads or resize
