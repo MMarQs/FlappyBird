@@ -254,6 +254,22 @@ const gameOver =
         spriteH : 232,
     },
 
+    ok_button : 
+    {
+        spriteX : 388,
+        spriteY : 57,
+        spriteW : 160,
+        spriteH : 56,
+    },
+
+    share_button : 
+    {
+        spriteX : 388,
+        spriteY : 0,
+        spriteW : 160,
+        spriteH : 56,
+    },
+
     draw : function() 
     {
         ctx.drawImage(
@@ -269,6 +285,20 @@ const gameOver =
                         this.scoreboard.spriteW, this.scoreboard.spriteH, 
                         this.scoreboard.x, this.scoreboard.y, 
                         this.scoreboard.w, this.scoreboard.h
+                     );
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.ok_button.spriteX, this.ok_button.spriteY, 
+                        this.ok_button.spriteW, this.ok_button.spriteH, 
+                        this.ok_button.x, this.ok_button.y, 
+                        this.ok_button.w, this.ok_button.h
+                     );
+        ctx.drawImage(
+                        sprite_sheet, 
+                        this.share_button.spriteX, this.share_button.spriteY, 
+                        this.share_button.spriteW, this.share_button.spriteH, 
+                        this.share_button.x, this.share_button.y, 
+                        this.share_button.w, this.share_button.h
                      );
     }
 }
@@ -376,6 +406,18 @@ function adjustCanvas()
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
+
+    //Ok button measurements for canvas
+    gameOver.ok_button.x = cvs.width * 0.147;
+    gameOver.ok_button.y = cvs.height * 0.759;
+    gameOver.ok_button.w = cvs.width * 0.276;
+    gameOver.ok_button.h = cvs.height * 0.068;
+
+    //Share button measurements for canvas
+    gameOver.share_button.x = cvs.width * 0.576;
+    gameOver.share_button.y = cvs.height * 0.759;
+    gameOver.share_button.w = cvs.width * 0.276;
+    gameOver.share_button.h = cvs.height * 0.068;
 }
 
 //When window loads or resize
