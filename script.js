@@ -9,6 +9,50 @@ let frames = 0;
 const sprite_sheet = new Image();
 sprite_sheet.src = "img/sprite_sheet.png"
 
+//GAME STATES
+const state = 
+{
+    current : 0,
+    home : 0,
+    getReady : 1,
+    game : 2,
+    gameOver : 3
+}
+
+//CONTROL THE GAME
+//This will fire up the fuction whenever the user clicks
+cvs.addEventListener("click", function(event) 
+{ 
+    switch (state.current) 
+    {
+        case state.home:
+            state.current = state.getReady;
+            break;
+        case state.getReady:
+            state.current = state.game;
+            break;
+        case state.gameOver:
+            state.current = state.home;
+            break;
+    }        
+});
+
+//This will fire up the fuction whenever the user presses space
+document.addEventListener("keydown", function(event) 
+{ 
+    if (event.key == " ") 
+    {
+        switch (state.current) 
+        {
+            case state.getReady:
+                state.current = state.game;
+                break;
+            case state.game:
+                break;
+        } 
+    }        
+});
+
 //BACKGROUND
 const background = 
 {
@@ -55,7 +99,7 @@ const foreground =
                         (this.x + this.w), this.y, 
                         this.w, this.h
                      );
-    },
+    }
 }
 
 //BIRD
@@ -72,24 +116,28 @@ const bird =
     draw : function() 
     {
         let bird = this.animation[this.frame];
-        { 
+
+        if(state.current != state.home)
+        {
             ctx.drawImage(
                             sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
                             (this.x - this.w/2), (this.y - this.h/2), //Centering the bird
                             this.w, this.h
-                         );
-            
+                         ); 
+        }
+        else
+        { 
             ctx.drawImage(
-                           sprite_sheet, 
+                            sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
                             (this.x2 - this.w2/2), (this.y2 - this.h2/2),
                             this.w2, this.h2
                          );
         }
-    },
+    }
 }
 
 //HOME
@@ -131,36 +179,39 @@ const home =
 
     draw : function() 
     {
-        ctx.drawImage(
-            sprite_sheet,
-            this.logo.spriteX, this.logo.spriteY, 
-            this.logo.spriteW, this.logo.spriteH, 
-            this.logo.x, this.logo.y, 
-            this.logo.w, this.logo.h
-        );
-        ctx.drawImage(
-            sprite_sheet, 
-            this.studio_name.spriteX, this.studio_name.spriteY, 
-            this.studio_name.spriteW, this.studio_name.spriteH, 
-            this.studio_name.x, this.studio_name.y, 
-            this.studio_name.w, this.studio_name.h
-        );
-        ctx.drawImage(
-            sprite_sheet, 
-            this.start_button.spriteX, this.start_button.spriteY, 
-            this.start_button.spriteW, this.start_button.spriteH, 
-            this.start_button.x, this.start_button.y, 
-            this.start_button.w, this.start_button.h
-                     );
-        /*
-        ctx.drawImage(
-            sprite_sheet, 
-            this.score_button.spriteX, this.score_button.spriteY, 
-            this.score_button.spriteW, this.score_button.spriteH, 
-            this.score_button.x, this.score_button.y, 
-            this.score_button.w, this.score_button.h
-                     );
-        */
+        if(state.current == state.home)
+        {
+            ctx.drawImage(
+                            sprite_sheet,
+                            this.logo.spriteX, this.logo.spriteY, 
+                            this.logo.spriteW, this.logo.spriteH, 
+                            this.logo.x, this.logo.y, 
+                            this.logo.w, this.logo.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.studio_name.spriteX, this.studio_name.spriteY, 
+                            this.studio_name.spriteW, this.studio_name.spriteH, 
+                            this.studio_name.x, this.studio_name.y, 
+                            this.studio_name.w, this.studio_name.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.start_button.spriteX, this.start_button.spriteY, 
+                            this.start_button.spriteW, this.start_button.spriteH, 
+                            this.start_button.x, this.start_button.y, 
+                            this.start_button.w, this.start_button.h
+                         );
+            /*
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.score_button.spriteX, this.score_button.spriteY, 
+                            this.score_button.spriteW, this.score_button.spriteH, 
+                            this.score_button.x, this.score_button.y, 
+                            this.score_button.w, this.score_button.h
+                         );
+            */
+        }
     }
 }
 
@@ -185,20 +236,23 @@ const getReady =
 
     draw : function() 
     {
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.get_ready.spriteX, this.get_ready.spriteY, 
-                            this.get_ready.spriteW, this.get_ready.spriteH, 
-                            this.get_ready.x, this.get_ready.y,
-                            this.get_ready.w, this.get_ready.h
-                         );
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.tap.spriteX, this.tap.spriteY, 
-                            this.tap.spriteW, this.tap.spriteH, 
-                            this.tap.x, this.tap.y,
-                            this.tap.w, this.tap.h
-                         );
+        if(state.current == state.getReady)
+        {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.get_ready.spriteX, this.get_ready.spriteY, 
+                                this.get_ready.spriteW, this.get_ready.spriteH, 
+                                this.get_ready.x, this.get_ready.y,
+                                this.get_ready.w, this.get_ready.h
+                             );
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.tap.spriteX, this.tap.spriteY, 
+                                this.tap.spriteW, this.tap.spriteH, 
+                                this.tap.x, this.tap.y,
+                                this.tap.w, this.tap.h
+                             );
+        }
     }
 }
 
@@ -225,13 +279,16 @@ const gameButtons =
 
     draw : function() 
     {
-        ctx.drawImage(
-                        sprite_sheet, 
-                        this.pause_button.spriteX, this.pause_button.spriteY, 
-                        this.pause_button.spriteW, this.pause_button.spriteH, 
-                        this.x, this.y, 
-                        this.w, this.h
-                     );
+        if(state.current == state.game)
+        {
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.pause_button.spriteX, this.pause_button.spriteY, 
+                            this.pause_button.spriteW, this.pause_button.spriteH, 
+                            this.x, this.y, 
+                            this.w, this.h
+                         );
+        }
     }
 }
 
@@ -274,53 +331,40 @@ const gameOver =
 
     draw : function() 
     {
-        ctx.drawImage(
-                        sprite_sheet, 
-                        this.game_over.spriteX, this.game_over.spriteY, 
-                        this.game_over.spriteW, this.game_over.spriteH, 
-                        this.game_over.x, this.game_over.y, 
-                        this.game_over.w, this.game_over.h
-                     );
-        ctx.drawImage(
-                        sprite_sheet, 
-                        this.scoreboard.spriteX, this.scoreboard.spriteY, 
-                        this.scoreboard.spriteW, this.scoreboard.spriteH, 
-                        this.scoreboard.x, this.scoreboard.y, 
-                        this.scoreboard.w, this.scoreboard.h
-                     );
-        ctx.drawImage(
-                        sprite_sheet, 
-                        this.ok_button.spriteX, this.ok_button.spriteY, 
-                        this.ok_button.spriteW, this.ok_button.spriteH, 
-                        this.ok_button.x, this.ok_button.y, 
-                        this.ok_button.w, this.ok_button.h
-                     );
-        /*
-        ctx.drawImage(
-                        sprite_sheet, 
-                        this.share_button.spriteX, this.share_button.spriteY, 
-                        this.share_button.spriteW, this.share_button.spriteH, 
-                        this.share_button.x, this.share_button.y, 
-                        this.share_button.w, this.share_button.h
-                     );
-        */
+        if(state.current == state.gameOver)
+        {
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.game_over.spriteX, this.game_over.spriteY, 
+                            this.game_over.spriteW, this.game_over.spriteH, 
+                            this.game_over.x, this.game_over.y, 
+                            this.game_over.w, this.game_over.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.scoreboard.spriteX, this.scoreboard.spriteY, 
+                            this.scoreboard.spriteW, this.scoreboard.spriteH, 
+                            this.scoreboard.x, this.scoreboard.y, 
+                            this.scoreboard.w, this.scoreboard.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.ok_button.spriteX, this.ok_button.spriteY, 
+                            this.ok_button.spriteW, this.ok_button.spriteH, 
+                            this.ok_button.x, this.ok_button.y, 
+                            this.ok_button.w, this.ok_button.h
+                         );
+            /*
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.share_button.spriteX, this.share_button.spriteY, 
+                            this.share_button.spriteW, this.share_button.spriteH, 
+                            this.share_button.x, this.share_button.y, 
+                            this.share_button.w, this.share_button.h
+                         );
+            */
+        }
     }
-}
-
-//DRAW
-function draw() 
-{
-    //Background color of canvas 
-    ctx.fillStyle = "#7BC5CD"; 
-    ctx.fillRect(0, 0, cvs.width, cvs.height); 
-
-    background.draw();
-    foreground.draw();
-    bird.draw();
-    home.draw();
-    getReady.draw();
-    gameButtons.draw();
-    gameOver.draw();
 }
 
 //ADJUST CANVAS
@@ -432,6 +476,22 @@ window.addEventListener("load", () => {
     adjustCanvas();
     window.addEventListener("resize", adjustCanvas);
 });
+
+//DRAW
+function draw() 
+{
+    //Background color of canvas 
+    ctx.fillStyle = "#7BC5CD"; 
+    ctx.fillRect(0, 0, cvs.width, cvs.height); 
+
+    background.draw();
+    foreground.draw();
+    bird.draw();
+    home.draw();
+    getReady.draw();
+    gameButtons.draw();
+    gameOver.draw();
+}
 
 //UPDATE
 function update() 
