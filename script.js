@@ -137,6 +137,16 @@ const bird =
                             this.w2, this.h2
                          );
         }
+    },
+
+    update: function() 
+    {
+        //The bird must flap slowly on home or get ready state
+        this.period = (state.current == state.home || state.current == state.getReady) ? 7 : 4;
+        //Incrementing the frame by 1, each period
+        this.frame += frames % this.period == 0 ? 1 : 0;
+        //Frame goes from 0 to 3, then again to 0
+        this.frame = this.frame % this.animation.length;  
     }
 }
 
@@ -496,7 +506,7 @@ function draw()
 //UPDATE
 function update() 
 {
-
+    bird.update();
 }
 
 //LOOP
