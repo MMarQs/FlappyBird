@@ -40,7 +40,7 @@ cvs.addEventListener("click", function(event)
 //This will fire up the fuction whenever the user presses space
 document.addEventListener("keydown", function(event) 
 { 
-    if (event.key == " ") 
+    if (event.key === " ") 
     {
         switch (state.current) 
         {
@@ -76,10 +76,10 @@ const background =
 //FOREGROUND
 const foreground = 
 {
-    spriteX : 552,
+    spriteX : 553,
     spriteY : 576,
-    spriteW : 448,
-    spriteH : 224,
+    spriteW : 446,
+    spriteH : 223,
 
     dx : 0,
 
@@ -99,6 +99,16 @@ const foreground =
                         (this.x + this.w), this.y, 
                         this.w, this.h
                      );
+    },
+
+    update : function() 
+    {
+        this.dx = cvs.width * 0.005;
+
+        if(state.current != state.gameOver) 
+        {
+            this.x = (this.x - this.dx) % (this.w/2);
+        }
     }
 }
 
@@ -507,6 +517,7 @@ function draw()
 function update() 
 {
     bird.update();
+    foreground.update();
 }
 
 //LOOP
