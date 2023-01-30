@@ -49,10 +49,23 @@ document.addEventListener("keydown", function(event)
                 state.current = state.game;
                 break;
             case state.game:
-                bird.flap();
+                if (!birdFlapped) 
+                {
+                    bird.flap();
+                    birdFlapped = true;
+                }
                 break;
         } 
     }        
+});
+
+//This will fire up the fuction whenever the user stop pressing space
+document.addEventListener("keyup", function(event) 
+{ 
+    if (event.key === " " && state.current == state.game)
+    {
+        birdFlapped = false;
+    } 
 });
 
 //BACKGROUND
