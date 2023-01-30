@@ -4,6 +4,7 @@ const ctx = cvs.getContext("2d");
 
 //GAME VARIABLES AND CONSTANTS
 let frames = 0;
+const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
 const sprite_sheet = new Image();
@@ -48,6 +49,7 @@ document.addEventListener("keydown", function(event)
                 state.current = state.game;
                 break;
             case state.game:
+                bird.flap();
                 break;
         } 
     }        
@@ -85,6 +87,7 @@ const foreground =
 
     draw : function() 
     {
+        //Drawing 2 foregroung images because the sprite's width is lower than canvas width
         ctx.drawImage(
                         sprite_sheet, 
                         this.spriteX, this.spriteY, 
@@ -107,6 +110,7 @@ const foreground =
 
         if(state.current != state.gameOver) 
         {
+            //Keeps decrementing x by deltax until the foreground be moved by its width / 2
             this.x = (this.x - this.dx) % (this.w/2);
         }
     }
@@ -122,10 +126,20 @@ const bird =
     ],
 
     frame : 0,
+    gravity : 0,
+    jump : 0,
+    speed : 0,
+    rotation : 0,
 
     draw : function() 
     {
         let bird = this.animation[this.frame];
+
+        //Saving the state of the canvas so only the bird rotates
+        ctx.save();
+        //Translation from the (0, 0) origin to the bird orgin so the centre of rotation is the centre of the bird
+        state.current != state.home ? ctx.translate(this.x, this.y) : ctx.translate(this.x2, this.y2);
+        ctx.rotate(this.rotation);
 
         if(state.current != state.home)
         {
@@ -133,7 +147,7 @@ const bird =
                             sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
-                            (this.x - this.w/2), (this.y - this.h/2), //Centering the bird
+                            -this.w/2, -this.h/2, //Centering the bird
                             this.w, this.h
                          ); 
         }
@@ -143,10 +157,18 @@ const bird =
                             sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
-                            (this.x2 - this.w2/2), (this.y2 - this.h2/2),
+                            -this.w2/2, -this.h2/2, //Centering the bird
                             this.w2, this.h2
                          );
         }
+
+        //Restore state after rotation
+        ctx.restore();
+    },
+
+    flap : function() 
+    {
+        this.speed = -this.jump;
     },
 
     update: function() 
@@ -157,6 +179,41 @@ const bird =
         this.frame += frames % this.period == 0 ? 1 : 0;
         //Frame goes from 0 to 3, then again to 0
         this.frame = this.frame % this.animation.length;  
+
+
+        if(state.current == state.home || state.current == state.getReady)
+        {
+            //Reset bird's position after game over
+            this.y = cvs.height * 0.395;
+            this.rotation = 0 * DEGREE;
+        } 
+        else
+        {
+            this.speed += this.gravity;
+            this.y += this.speed;
+
+            if(this.y + this.h/2 >= foreground.y)
+            {
+                //Bird position when it collides with the foreground
+                this.y = foreground.y - this.h/2;
+                if(state.current == state.game)
+                {
+                    state.current = state.gameOver;
+                }
+            }
+
+            //If the speed is greater than the jump, means the bird is falling down
+            if(this.speed >= this.jump)
+            {
+                this.rotation = 90 * DEGREE;
+                //When bird dies, stop flapping animation
+                this.frame = 0;
+            }
+            else
+            {
+                this.rotation = -25 * DEGREE;
+            }
+        }  
     }
 }
 
@@ -417,6 +474,10 @@ function adjustCanvas()
     bird.y2 = cvs.height * 0.321;
     bird.w2 = cvs.width * 0.117;
     bird.h2 = cvs.height * 0.059;
+
+    //Bird gravity and jump
+    bird.gravity = cvs.height * 0.0005;
+    bird.jump = cvs.height * 0.009;
 
     //Logo measurements for canvas
     home.logo.x = cvs.width * 0.098;
