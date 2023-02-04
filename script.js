@@ -4,6 +4,7 @@ const ctx = cvs.getContext("2d");
 
 //GAME VARIABLES AND CONSTANTS
 let frames = 0;
+let birdFlapped = false;
 const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
@@ -30,7 +31,12 @@ cvs.addEventListener("click", function(event)
             state.current = state.getReady;
             break;
         case state.getReady:
+            bird.flap();
+            birdFlapped = true;
             state.current = state.game;
+            break;
+        case state.game:
+            bird.flap();
             break;
         case state.gameOver:
             state.current = state.home;
@@ -46,6 +52,8 @@ document.addEventListener("keydown", function(event)
         switch (state.current) 
         {
             case state.getReady:
+                bird.flap();
+                birdFlapped = true;
                 state.current = state.game;
                 break;
             case state.game:
@@ -95,8 +103,6 @@ const foreground =
     spriteY : 576,
     spriteW : 446,
     spriteH : 223,
-
-    dx : 0,
 
     draw : function() 
     {
@@ -477,7 +483,7 @@ function adjustCanvas()
     foreground.h = foreground.w * 0.46;
 
     //Get bird measurements for canvas
-    bird.x = cvs.width * 0.232;
+    bird.x = cvs.width * 0.290;
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
