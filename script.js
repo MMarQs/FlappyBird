@@ -158,10 +158,10 @@ const bird =
         //Saving the state of the canvas so only the bird rotates
         ctx.save();
         //Translation from the (0, 0) origin to the bird orgin so the centre of rotation is the centre of the bird
-        state.current != state.home ? ctx.translate(this.x, this.y) : ctx.translate(this.x2, this.y2);
+        ctx.translate(this.x, this.y)
         ctx.rotate(this.rotation);
 
-        if(state.current == state.home)
+        if(state.current != state.home)
         {
             ctx.drawImage(
                             sprite_sheet, 
@@ -170,16 +170,6 @@ const bird =
                             -this.w/2, -this.h/2, //Centering the bird
                             this.w, this.h
                          );
-        }
-        else
-        { 
-            ctx.drawImage(
-                            sprite_sheet, 
-                            bird.spriteX, bird.spriteY, 
-                            bird.spriteW, bird.spriteH, 
-                            -this.w2/2, -this.h2/2, //Centering the bird
-                            this.w2, this.h2
-                         ); 
         }
 
         //Restore state after rotation
@@ -193,14 +183,14 @@ const bird =
 
     update: function() 
     {
-        //The bird must flap slowly on home or get ready state
-        this.period = (state.current == state.home || state.current == state.getReady) ? 7 : 4;
+        //The bird must flap slowly on get ready state
+        this.period = (state.current == state.getReady) ? 7 : 4;
         //Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
         //Frame goes from 0 to 3, then again to 0
         this.frame = this.frame % this.animation.length; 
 
-        if(state.current == state.home || state.current == state.getReady)
+        if(state.current == state.getReady)
         {
             //Reset bird's position after game over
             this.y = cvs.height * 0.395;
@@ -473,13 +463,7 @@ function adjustCanvas()
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
 
-    //Get bird measurements for canvas
-    bird.x2 = cvs.width * 0.861;
-    bird.y2 = cvs.height * 0.321;
-    bird.w2 = cvs.width * 0.117;
-    bird.h2 = cvs.height * 0.059;
-
-    //Bird gravity and jump
+    //Get bird gravity and jump
     bird.gravity = cvs.height * 0.0005;
     bird.jump = cvs.height * 0.009;
 
