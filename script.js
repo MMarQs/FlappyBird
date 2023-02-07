@@ -5,6 +5,7 @@ const ctx = cvs.getContext("2d");
 //GAME VARIABLES AND CONSTANTS
 let frames = 0;
 let birdFlapped = false;
+let logoGoUp = true;
 const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
@@ -160,7 +161,7 @@ const bird =
         state.current != state.home ? ctx.translate(this.x, this.y) : ctx.translate(this.x2, this.y2);
         ctx.rotate(this.rotation);
 
-        if(state.current != state.home)
+        if(state.current == state.home)
         {
             ctx.drawImage(
                             sprite_sheet, 
@@ -168,7 +169,7 @@ const bird =
                             bird.spriteW, bird.spriteH, 
                             -this.w/2, -this.h/2, //Centering the bird
                             this.w, this.h
-                         ); 
+                         );
         }
         else
         { 
@@ -178,7 +179,7 @@ const bird =
                             bird.spriteW, bird.spriteH, 
                             -this.w2/2, -this.h2/2, //Centering the bird
                             this.w2, this.h2
-                         );
+                         ); 
         }
 
         //Restore state after rotation
@@ -197,8 +198,7 @@ const bird =
         //Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
         //Frame goes from 0 to 3, then again to 0
-        this.frame = this.frame % this.animation.length;  
-
+        this.frame = this.frame % this.animation.length; 
 
         if(state.current == state.home || state.current == state.getReady)
         {
@@ -247,14 +247,6 @@ const home =
         spriteH : 87,
     },
 
-    studio_name : 
-    {
-        spriteX : 172,
-        spriteY : 284,
-        spriteW : 380,
-        spriteH : 28,
-    },
-
     start_button : 
     {
         spriteX : 388,
@@ -263,15 +255,13 @@ const home =
         spriteH : 56,
     },
 
-    score_button : 
+    studio_name : 
     {
-        spriteX : 388,
-        spriteY : 114,
-        spriteW : 160,
-        spriteH : 56,
+        spriteX : 172,
+        spriteY : 284,
+        spriteW : 380,
+        spriteH : 28,
     },
-
-    //TODO: Animate logo on home state
 
     draw : function() 
     {
@@ -286,27 +276,43 @@ const home =
                          );
             ctx.drawImage(
                             sprite_sheet, 
-                            this.studio_name.spriteX, this.studio_name.spriteY, 
-                            this.studio_name.spriteW, this.studio_name.spriteH, 
-                            this.studio_name.x, this.studio_name.y, 
-                            this.studio_name.w, this.studio_name.h
-                         );
-            ctx.drawImage(
-                            sprite_sheet, 
                             this.start_button.spriteX, this.start_button.spriteY, 
                             this.start_button.spriteW, this.start_button.spriteH, 
                             this.start_button.x, this.start_button.y, 
                             this.start_button.w, this.start_button.h
                          );
-            /*
             ctx.drawImage(
                             sprite_sheet, 
-                            this.score_button.spriteX, this.score_button.spriteY, 
-                            this.score_button.spriteW, this.score_button.spriteH, 
-                            this.score_button.x, this.score_button.y, 
-                            this.score_button.w, this.score_button.h
+                            this.studio_name.spriteX, this.studio_name.spriteY, 
+                            this.studio_name.spriteW, this.studio_name.spriteH, 
+                            this.studio_name.x, this.studio_name.y, 
+                            this.studio_name.w, this.studio_name.h
                          );
-            */
+        }
+    },
+
+    update: function() 
+    {
+        this.dy = cvs.width * 0.001;
+
+        if (state.current == state.home) 
+        {
+            if (logoGoUp) 
+            {
+                this.logo.y -= this.dy;
+                if(this.logo.y <= this.logo.MAXY) 
+                {
+                    logoGoUp = false;
+                }
+            }
+            if (!logoGoUp) 
+            {
+                this.logo.y += this.dy;
+                if(this.logo.y >= this.logo.MINY) 
+                {
+                    logoGoUp = true;
+                }
+            }
         }
     }
 }
@@ -371,8 +377,6 @@ const gameButtons =
         spriteH : 56,
     },
 
-    // TODO: If game is paused change to resume button
-
     draw : function() 
     {
         if(state.current == state.game)
@@ -415,16 +419,6 @@ const gameOver =
         spriteH : 56,
     },
 
-    /*
-    share_button : 
-    {
-        spriteX : 388,
-        spriteY : 0,
-        spriteW : 160,
-        spriteH : 56,
-    },
-    */
-
     draw : function() 
     {
         if(state.current == state.gameOver)
@@ -450,15 +444,6 @@ const gameOver =
                             this.ok_button.x, this.ok_button.y, 
                             this.ok_button.w, this.ok_button.h
                          );
-            /*
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.share_button.spriteX, this.share_button.spriteY, 
-                            this.share_button.spriteW, this.share_button.spriteH, 
-                            this.share_button.x, this.share_button.y, 
-                            this.share_button.w, this.share_button.h
-                         );
-            */
         }
     }
 }
@@ -482,13 +467,13 @@ function adjustCanvas()
     foreground.w = cvs.width * 0.7;
     foreground.h = foreground.w * 0.46;
 
-    //Get bird measurements for canvas
+    //Get bird measurements for home screen canvas
     bird.x = cvs.width * 0.290;
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
 
-    //Get bird measurements for home screen canvas
+    //Get bird measurements for canvas
     bird.x2 = cvs.width * 0.861;
     bird.y2 = cvs.height * 0.321;
     bird.w2 = cvs.width * 0.117;
@@ -504,26 +489,20 @@ function adjustCanvas()
     home.logo.w = cvs.width * 0.665;
     home.logo.h = cvs.height * 0.109; 
 
+    home.logo.MAXY = cvs.height * 0.279 - home.logo.h/7;
+    home.logo.MINY = cvs.height * 0.279 + home.logo.h/7;
+
+    //Start button measurements for canvas
+    home.start_button.x = cvs.width * 0.359;
+    home.start_button.y = cvs.height * 0.759;
+    home.start_button.w = cvs.width * 0.276;
+    home.start_button.h = cvs.height * 0.068;
+
     //Studio Name measurements for canvas
     home.studio_name.x = cvs.width * 0.171;
     home.studio_name.y = cvs.height * 0.904;
     home.studio_name.w = cvs.width * 0.659;
     home.studio_name.h = cvs.height * 0.034; 
-
-    //Start button measurements for canvas
-    home.start_button.x = cvs.width * 0.359;
-    //home.start_button.x = cvs.width * 0.147;
-    home.start_button.y = cvs.height * 0.759;
-    home.start_button.w = cvs.width * 0.276;
-    home.start_button.h = cvs.height * 0.068;
-
-    /*
-    //Score button measurements for canvas
-    home.score_button.x = cvs.width * 0.576;
-    home.score_button.y = cvs.height * 0.759;
-    home.score_button.w = cvs.width * 0.276;
-    home.score_button.h = cvs.height * 0.068;
-    */
 
     //Get Ready Message measurements for canvas
     getReady.get_ready.x = cvs.width * 0.197;
@@ -557,18 +536,9 @@ function adjustCanvas()
 
     //Ok button measurements for canvas
     gameOver.ok_button.x = cvs.width * 0.359;
-    //gameOver.ok_button.x = cvs.width * 0.147;
     gameOver.ok_button.y = cvs.height * 0.759;
     gameOver.ok_button.w = cvs.width * 0.276;
     gameOver.ok_button.h = cvs.height * 0.068;
-
-    /*
-    //Share button measurements for canvas
-    gameOver.share_button.x = cvs.width * 0.576;
-    gameOver.share_button.y = cvs.height * 0.759;
-    gameOver.share_button.w = cvs.width * 0.276;
-    gameOver.share_button.h = cvs.height * 0.068;
-    */
 }
 
 //When window loads or resize
@@ -598,6 +568,7 @@ function update()
 {
     bird.update();
     foreground.update();
+    home.update();
 }
 
 //LOOP
