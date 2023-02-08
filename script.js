@@ -126,8 +126,6 @@ const foreground =
 
     update : function() 
     {
-        this.dx = cvs.width * 0.005;
-
         if(state.current != state.gameOver) 
         {
             //Keeps decrementing x by deltax until the foreground be moved by its width / 2
@@ -139,10 +137,11 @@ const foreground =
 //BIRD
 const bird = 
 {
-    animation : [
-        {spriteX: 932, spriteY: 432, spriteW: 68, spriteH: 47},
-        {spriteX: 932, spriteY: 480, spriteW: 68, spriteH: 47},
-        {spriteX: 932, spriteY: 528, spriteW: 68, spriteH: 47}
+    animation : 
+    [
+        {spriteX: 932, spriteY: 429, spriteW: 68, spriteH: 48},
+        {spriteX: 932, spriteY: 478, spriteW: 68, spriteH: 48},
+        {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
     ],
 
     frame : 0,
@@ -184,7 +183,7 @@ const bird =
     update: function() 
     {
         //The bird must flap slowly on get ready state
-        this.period = (state.current == state.getReady) ? 7 : 4;
+        this.period = (state.current == state.getReady) ? 6 : 4;
         //Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
         //Frame goes from 0 to 3, then again to 0
@@ -234,7 +233,19 @@ const home =
         spriteX : 552,
         spriteY : 236,
         spriteW : 384,
-        spriteH : 87,
+        spriteH : 87
+    },
+
+    animation : 
+    [
+        {spriteX: 932, spriteY: 429, spriteW: 68, spriteH: 48},
+        {spriteX: 932, spriteY: 478, spriteW: 68, spriteH: 48},
+        {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
+    ],
+
+    bird : 
+    {
+
     },
 
     start_button : 
@@ -242,7 +253,7 @@ const home =
         spriteX : 388,
         spriteY : 171,
         spriteW : 160,
-        spriteH : 56,
+        spriteH : 56
     },
 
     studio_name : 
@@ -250,11 +261,15 @@ const home =
         spriteX : 172,
         spriteY : 284,
         spriteW : 380,
-        spriteH : 28,
+        spriteH : 28
     },
+
+    frame : 0,
 
     draw : function() 
     {
+        let bird = this.animation[this.frame];
+
         if(state.current == state.home)
         {
             ctx.drawImage(
@@ -263,6 +278,13 @@ const home =
                             this.logo.spriteW, this.logo.spriteH, 
                             this.logo.x, this.logo.y, 
                             this.logo.w, this.logo.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            bird.spriteX, bird.spriteY, 
+                            bird.spriteW, bird.spriteH, 
+                            this.bird.x, this.bird.y,
+                            this.bird.w, this.bird.h
                          );
             ctx.drawImage(
                             sprite_sheet, 
@@ -283,13 +305,12 @@ const home =
 
     update: function() 
     {
-        this.dy = cvs.width * 0.001;
-
         if (state.current == state.home) 
         {
             if (logoGoUp) 
             {
-                this.logo.y -= this.dy;
+                this.logo.y -= this.logo.dy;
+                this.bird.y -= this.logo.dy;
                 if(this.logo.y <= this.logo.MAXY) 
                 {
                     logoGoUp = false;
@@ -297,13 +318,24 @@ const home =
             }
             if (!logoGoUp) 
             {
-                this.logo.y += this.dy;
+                this.logo.y += this.logo.dy;
+                this.bird.y += this.logo.dy;
                 if(this.logo.y >= this.logo.MINY) 
                 {
                     logoGoUp = true;
                 }
             }
         }
+
+        //The bird must flap slowly on home state
+        if(state.current == state.home)
+        {
+            this.period = 6;
+        }
+        //Incrementing the frame by 1, each period
+        this.frame += frames % this.period == 0 ? 1 : 0;
+        //Frame goes from 0 to 3, then again to 0
+        this.frame = this.frame % this.animation.length; 
     }
 }
 
@@ -315,7 +347,7 @@ const getReady =
         spriteX : 552,
         spriteY : 324,
         spriteW : 348,
-        spriteH : 88,
+        spriteH : 87
     },
 
     tap : 
@@ -323,7 +355,7 @@ const getReady =
         spriteX : 232,
         spriteY : 0,
         spriteW : 155,
-        spriteH : 196,
+        spriteH : 196
     },
 
     draw : function() 
@@ -356,7 +388,7 @@ const gameButtons =
         spriteX : 388,
         spriteY : 228,
         spriteW : 52,
-        spriteH : 56,
+        spriteH : 56
     },
 
     resume_button : 
@@ -364,7 +396,7 @@ const gameButtons =
         spriteX : 441,
         spriteY : 228,
         spriteW : 52,
-        spriteH : 56,
+        spriteH : 56
     },
 
     draw : function() 
@@ -388,9 +420,9 @@ const gameOver =
     game_over : 
     {
         spriteX : 552,
-        spriteY : 412,
+        spriteY : 413,
         spriteW : 376,
-        spriteH : 76,
+        spriteH : 74
     },
 
     scoreboard : 
@@ -398,7 +430,7 @@ const gameOver =
         spriteX : 548,
         spriteY : 0,
         spriteW : 452,
-        spriteH : 232,
+        spriteH : 232
     },
 
     ok_button : 
@@ -406,7 +438,7 @@ const gameOver =
         spriteX : 388,
         spriteY : 57,
         spriteW : 160,
-        spriteH : 56,
+        spriteH : 56
     },
 
     draw : function() 
@@ -438,87 +470,90 @@ const gameOver =
     }
 }
 
-//ADJUST CANVAS
-function adjustCanvas() 
+//CANVAS SCALE
+function canvasScale() 
 {
-    //Get canvas height and width
+    //CANVAS HEIGHT & WIDTH
     cvs.height = window.innerHeight - 2;
     cvs.width  = cvs.height * 0.72 - 2;
 
-    //Get background measurements for canvas
+    //BACKGROUND
     background.x = 0;
     background.y = cvs.height * 0.631;
     background.w = cvs.width;
     background.h = background.w * 0.74;
 
-    //Get foreground measurements for canvas
+    //FOREGROUND
     foreground.x = 0;
     foreground.y = cvs.height * 0.861;
     foreground.w = cvs.width * 0.7;
     foreground.h = foreground.w * 0.46;
+    foreground.dx = cvs.width * 0.005;
 
-    //Get bird measurements for home screen canvas
+    //BIRD
     bird.x = cvs.width * 0.290;
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
-
-    //Get bird gravity and jump
     bird.gravity = cvs.height * 0.0005;
     bird.jump = cvs.height * 0.009;
 
-    //Logo measurements for canvas
+    //HOME
+    //Logo
     home.logo.x = cvs.width * 0.098;
     home.logo.y = cvs.height * 0.279;
     home.logo.w = cvs.width * 0.665;
     home.logo.h = cvs.height * 0.109; 
-
     home.logo.MAXY = cvs.height * 0.279 - home.logo.h/7;
     home.logo.MINY = cvs.height * 0.279 + home.logo.h/7;
-
-    //Start button measurements for canvas
+    home.logo.dy = cvs.width * 0.0012;
+    //Bird
+    home.bird.x = cvs.width * 0.803;
+    home.bird.y = cvs.height * 0.294;
+    home.bird.w = cvs.width * 0.117;
+    home.bird.h = cvs.height * 0.059;
+    //Start Button
     home.start_button.x = cvs.width * 0.359;
     home.start_button.y = cvs.height * 0.759;
     home.start_button.w = cvs.width * 0.276;
     home.start_button.h = cvs.height * 0.068;
-
-    //Studio Name measurements for canvas
+    //Studio Name
     home.studio_name.x = cvs.width * 0.171;
-    home.studio_name.y = cvs.height * 0.904;
+    home.studio_name.y = cvs.height * 0.897;
     home.studio_name.w = cvs.width * 0.659;
     home.studio_name.h = cvs.height * 0.034; 
 
-    //Get Ready Message measurements for canvas
+    //GET READY
+    //"Get Ready" message
     getReady.get_ready.x = cvs.width * 0.197;
     getReady.get_ready.y = cvs.height * 0.206;
     getReady.get_ready.w = cvs.width * 0.602;
     getReady.get_ready.h = cvs.height * 0.109;  
-
-    //Tap measurements for canvas
+    //Tap
     getReady.tap.x = cvs.width * 0.433;
     getReady.tap.y = cvs.height * 0.435;
     getReady.tap.w = cvs.width * 0.270;
     getReady.tap.h = cvs.height * 0.244;
 
-    //Pause button measurements for canvas
+    //PAUSE & RESUME BUTTONS
+    //Pause button 
     gameButtons.x = cvs.width * 0.087;
     gameButtons.y = cvs.height * 0.045;
     gameButtons.w = cvs.width * 0.088;
     gameButtons.h = cvs.height * 0.069;  
 
-    //Game Over Message measurements for canvas
+    //GAME OVER
+    //"Game Over" message
     gameOver.game_over.x = cvs.width * 0.197;
     gameOver.game_over.y = cvs.height * 0.243;
     gameOver.game_over.w = cvs.width * 0.6049;
     gameOver.game_over.h = cvs.height * 0.095;  
-
-    //Scoreboard measurements for canvas
+    //Scoreboard
     gameOver.scoreboard.x = cvs.width * 0.107;
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
-
-    //Ok button measurements for canvas
+    //Ok button
     gameOver.ok_button.x = cvs.width * 0.359;
     gameOver.ok_button.y = cvs.height * 0.759;
     gameOver.ok_button.w = cvs.width * 0.276;
@@ -527,8 +562,8 @@ function adjustCanvas()
 
 //When window loads or resize
 window.addEventListener("load", () => {
-    adjustCanvas();
-    window.addEventListener("resize", adjustCanvas);
+    canvasScale();
+    window.addEventListener("resize", canvasScale);
 });
 
 //DRAW
