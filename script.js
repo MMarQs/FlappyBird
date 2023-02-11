@@ -145,8 +145,6 @@ const bird =
     ],
 
     frame : 0,
-    gravity : 0,
-    jump : 0,
     speed : 0,
     rotation : 0,
 
@@ -296,7 +294,23 @@ const pipes =
         for(let i = 0; i < this.position.length; i++)
         {
             let p = this.position[i];
+            let bottomYPos = p.y + this.h + this.gap;
 
+            //COLLISION DETECTION
+            //Top pipe
+            if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
+               bird.y + bird.radius > p.y && bird.y - bird.radius < p.y + this.h)
+            {
+                state.current = state.gameOver;
+            }
+            //Bottom pipe
+            if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
+               bird.y + bird.radius > bottomYPos && bird.y - bird.radius < bottomYPos + this.h)
+            {
+                state.current = state.gameOver;
+            }
+
+            //Moving the pipes
             p.x -= this.dx;
 
             //Delete first half of positions array when it has 4 positions
@@ -326,10 +340,7 @@ const home =
         {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
     ],
 
-    bird : 
-    {
-
-    },
+    bird : {},
 
     start_button : 
     {
@@ -580,6 +591,7 @@ function canvasScale()
     bird.h = cvs.height * 0.059;
     bird.gravity = cvs.height * 0.0006;
     bird.jump = cvs.height * 0.01;
+    bird.radius = cvs.height * 0.027;
 
     //PIPES
     for(let i = 0; i < pipes.position.length; i++)
