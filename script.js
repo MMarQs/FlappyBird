@@ -101,7 +101,7 @@ const background =
 const foreground = 
 {
     spriteX : 553,
-    spriteY : 576,
+    spriteY : 577,
     spriteW : 446,
     spriteH : 223,
 
@@ -128,7 +128,7 @@ const foreground =
     {
         if(state.current != state.gameOver) 
         {
-            //Keeps decrementing x by deltax until the foreground be moved by its width / 2
+            //Keeps decrementing x by dx until the foreground be moved by its width / 2
             this.x = (this.x - this.dx) % (this.w/2);
         }
     }
@@ -223,6 +223,89 @@ const bird =
             }
         }  
     }
+}
+
+//PIPES
+const pipes =
+{
+    position : [],
+    
+    top :
+    {
+        spriteX : 1000,
+        spriteY : 0,
+        spriteW : 104,
+        spriteH : 800
+    },
+
+    bottom : 
+    {
+        spriteX : 1104,
+        spriteY : 0,
+        spriteW : 104,
+        spriteH : 800
+    },
+
+    draw : function()
+    {
+        if(state.current == state.game || state.current == state.gameOver)
+        {
+            for(let i = 0; i < this.position.length; i++)
+            {
+                let p = this.position[i];
+                
+                let topYPos = p.y;
+                let bottomYPos = p.y + this.h + this.gap;
+    
+                ctx.drawImage( 
+                                sprite_sheet, 
+                                this.top.spriteX, this.top.spriteY, 
+                                this.top.spriteW, this.top.spriteH, 
+                                p.x, topYPos, 
+                                this.w, this.h
+                             ); 
+                ctx.drawImage( 
+                                sprite_sheet, 
+                                this.bottom.spriteX, this.bottom.spriteY, 
+                                this.bottom.spriteW, this.bottom.spriteH, 
+                                p.x, bottomYPos, 
+                                this.w, this.h
+                             );
+            }
+        }
+    },
+
+    update : function()
+    {
+        //Only create pipes in the game state
+        if(state.current != state.game) 
+        {
+            return;
+        }
+
+        //Every 80 frames add a new position to our position array
+        if(frames%80 == 0) 
+        {
+            pipes.position.push(
+            {
+                x : cvs.width,
+                y : pipes.maxYPos * (Math.random() + 1)
+            });
+        }
+        
+        for(let i = 0; i < this.position.length; i++)
+        {
+            let p = this.position[i];
+
+            p.x -= this.dx;
+
+            //Delete first half of positions array when it has 4 positions
+            if(this.position.length == 4)
+            {
+                this.position.slice(0, 2);
+            }
+        }
+    },
 }
 
 //HOME
@@ -488,15 +571,34 @@ function canvasScale()
     foreground.y = cvs.height * 0.861;
     foreground.w = cvs.width * 0.7;
     foreground.h = foreground.w * 0.46;
-    foreground.dx = cvs.width * 0.005;
+    foreground.dx = cvs.width * 0.007;
 
     //BIRD
     bird.x = cvs.width * 0.290;
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
     bird.h = cvs.height * 0.059;
-    bird.gravity = cvs.height * 0.0005;
-    bird.jump = cvs.height * 0.009;
+    bird.gravity = cvs.height * 0.0006;
+    bird.jump = cvs.height * 0.01;
+
+    //PIPES
+    for(let i = 0; i < pipes.position.length; i++)
+    {
+        let w = pipes.w / 0.164;
+        let h = pipes.h / 0.888;
+        let p = pipes.position[i];
+
+        pipes.position[i] = 
+        {
+            x : p.x * cvs.width / w,
+            y : p.y * cvs.height / h
+        }
+    }
+    pipes.w = cvs.width * 0.164;
+    pipes.h = cvs.height * 0.888;
+    pipes.gap = cvs.height * 0.177;
+    pipes.maxYPos = -(cvs.height * 0.350);
+    pipes.dx = cvs.width * 0.007;
 
     //HOME
     //Logo
@@ -574,6 +676,7 @@ function draw()
     ctx.fillRect(0, 0, cvs.width, cvs.height); 
 
     background.draw();
+    pipes.draw();
     foreground.draw();
     bird.draw();
     home.draw();
@@ -588,6 +691,7 @@ function update()
     bird.update();
     foreground.update();
     home.update();
+    pipes.update();
 }
 
 //LOOP
