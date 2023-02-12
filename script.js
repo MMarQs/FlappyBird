@@ -15,10 +15,10 @@ sprite_sheet.src = "img/sprite_sheet.png"
 //GAME STATES
 const state = 
 {
-    current : 0,
-    home : 0,
+    current  : 0,
+    home     : 0,
     getReady : 1,
-    game : 2,
+    game     : 2,
     gameOver : 3
 }
 
@@ -84,6 +84,10 @@ const background =
     spriteY : 392,
     spriteW : 552,
     spriteH : 408,
+    x : 0,
+    y : 0,
+    w : 0,
+    h : 0,
 
     draw : function() 
     {
@@ -104,6 +108,12 @@ const foreground =
     spriteY : 577,
     spriteW : 446,
     spriteH : 223,
+    x : 0,
+    y : 0,
+    w : 0,
+    h : 0,
+
+    dx : 0,
 
     draw : function() 
     {
@@ -143,10 +153,17 @@ const bird =
         {spriteX: 932, spriteY: 478, spriteW: 68, spriteH: 48},
         {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
     ],
+    x : 0, 
+    y : 0, 
+    w : 0, 
+    h : 0,
 
-    frame : 0,
-    speed : 0,
+    frame    : 0,
+    gravity  : 0,
+    jump     : 0,
+    speed    : 0,
     rotation : 0,
+    radius   : 0,
 
     draw : function() 
     {
@@ -230,19 +247,23 @@ const pipes =
     
     top :
     {
-        spriteX : 1000,
-        spriteY : 0,
-        spriteW : 104,
-        spriteH : 800
+        spriteX: 1000, spriteY: 0, 
+        spriteW: 104, spriteH: 800,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     bottom : 
     {
-        spriteX : 1104,
-        spriteY : 0,
-        spriteW : 104,
-        spriteH : 800
+        spriteX: 1104, spriteY: 0, 
+        spriteW: 104, spriteH: 800,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
+
+    dx      : 0,
+    gap     : 0,
+    maxYPos : 0,
 
     draw : function()
     {
@@ -327,10 +348,11 @@ const home =
 {
     logo : 
     {
-        spriteX : 552,
-        spriteY : 236,
-        spriteW : 384,
-        spriteH : 87
+        spriteX: 552, spriteY: 236, 
+        spriteW: 384, spriteH: 87,
+        x: 0, y: 0,
+        w: 0, h: 0,
+        MAXY: 0, MINY: 0, dy: 0
     },
 
     animation : 
@@ -340,22 +362,26 @@ const home =
         {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
     ],
 
-    bird : {},
+    bird : 
+    {
+        x: 0, y: 0, 
+        w: 0, h: 0
+    },
 
     start_button : 
     {
-        spriteX : 388,
-        spriteY : 171,
-        spriteW : 160,
-        spriteH : 56
+        spriteX: 388, spriteY: 171, 
+        spriteW: 160, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     studio_name : 
     {
-        spriteX : 172,
-        spriteY : 284,
-        spriteW : 380,
-        spriteH : 28
+        spriteX: 172, spriteY: 284, 
+        spriteW: 380, spriteH: 28,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     frame : 0,
@@ -438,18 +464,14 @@ const getReady =
 {
     get_ready : 
     {
-        spriteX : 552,
-        spriteY : 324,
-        spriteW : 348,
-        spriteH : 87
+        spriteX: 552, spriteY: 324, spriteW: 348, spriteH: 87,
+        x: 0, y: 0, w: 0, h: 0
     },
 
     tap : 
     {
-        spriteX : 232,
-        spriteY : 0,
-        spriteW : 155,
-        spriteH : 196
+        spriteX: 232, spriteY: 0, spriteW: 155, spriteH: 196,
+        x: 0, y: 0, w: 0, h: 0
     },
 
     draw : function() 
@@ -479,18 +501,14 @@ const gameButtons =
 {
     pause_button : 
     {
-        spriteX : 388,
-        spriteY : 228,
-        spriteW : 52,
-        spriteH : 56
+        spriteX: 388, spriteY: 228, spriteW: 52, spriteH: 56,
+        x: 0, y: 0, w: 0, h: 0
     },
 
     resume_button : 
     {
-        spriteX : 441,
-        spriteY : 228,
-        spriteW : 52,
-        spriteH : 56
+        spriteX: 441, spriteY: 228, spriteW: 52, spriteH: 56,
+        x: 0, y: 0, w: 0, h: 0
     },
 
     draw : function() 
@@ -513,26 +531,26 @@ const gameOver =
 {
     game_over : 
     {
-        spriteX : 552,
-        spriteY : 413,
-        spriteW : 376,
-        spriteH : 74
+        spriteX: 552, spriteY: 413, 
+        spriteW: 376, spriteH: 74,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     scoreboard : 
     {
-        spriteX : 548,
-        spriteY : 0,
-        spriteW : 452,
-        spriteH : 232
+        spriteX: 548, spriteY: 0, 
+        spriteW: 452, spriteH: 232,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     ok_button : 
     {
-        spriteX : 388,
-        spriteY : 57,
-        spriteW : 160,
-        spriteH : 56
+        spriteX: 388, spriteY: 57, 
+        spriteW: 160, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     draw : function() 
