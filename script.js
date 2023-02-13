@@ -236,6 +236,10 @@ const bird =
                 this.rotation = -25 * DEGREE;
             }
         }  
+    },
+
+    speedReset : function(){
+        this.speed = 0;
     }
 }
 
@@ -358,7 +362,7 @@ const pipes =
         }
     },
 
-    reset : function()
+    pipesReset : function()
     {
         this.position = [];
     }
@@ -369,7 +373,7 @@ const home =
 {
     logo : 
     {
-        spriteX: 552, spriteY: 236, 
+        spriteX: 552, spriteY: 233, 
         spriteW: 384, spriteH: 87,
         x: 0, y: 0,
         w: 0, h: 0,
@@ -486,7 +490,7 @@ const getReady =
 {
     get_ready : 
     {
-        spriteX: 552, spriteY: 324, 
+        spriteX: 552, spriteY: 321, 
         spriteW: 348, spriteH: 87,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -561,8 +565,8 @@ const gameOver =
 {
     game_over : 
     {
-        spriteX: 552, spriteY: 413, 
-        spriteW: 376, spriteH: 74,
+        spriteX: 552, spriteY: 410, 
+        spriteW: 376, spriteH: 75,
         x: 0, y: 0, 
         w: 0, h: 0
     },
@@ -718,10 +722,65 @@ const score =
         }
     },
 
-    reset : function()
+    scoreReset : function()
     {
         this.score = 0;
     }
+}
+
+//SCORE MEDALS
+const medal = 
+{
+    bronze   : {spriteX: 554},
+    silver   : {spriteX: 642},
+    gold     : {spriteX: 731},
+    platinum : {spriteX: 820},
+    spriteY: 487,
+    spriteW: 88, 
+    spriteH: 87,
+    x : 0,
+    y : 0,
+    w : 0,
+    h : 0,
+
+    medal: "",
+
+    draw: function () 
+    {
+        let medalSpriteX;
+        
+        if (score.game_score >= 10 && score.game_score < 20) 
+        {
+            this.medal = "bronze";
+            medalSpriteX = this.bronze;
+        } 
+        else if (score.game_score >= 20 && score.game_score < 30) 
+        {
+            this.medal = "silver";
+            medalSpriteX = this.silver;
+        }
+        else if (score.game_score >= 30 && score.game_score < 40) 
+        {
+            this.medal = "gold";
+            medalSpriteX = this.gold;
+        } 
+        else if (score.game_score >= 40) 
+        {
+            this.medal = "platinum";
+            medalSpriteX = this.platinum;
+        }
+
+        if (state.current == state.gameOver) 
+        {
+            ctx.drawImage(
+                            sprite_sheet,
+                            medalSpriteX.spriteX, this.spriteY, 
+                            this.spriteW, this.spriteH, 
+                            this.x, this.y, 
+                            this.w, this.h
+                         );  
+        }
+    }  
 }
 
 //CANVAS SCALE
@@ -853,6 +912,12 @@ function canvasScale()
     score.best.y = cvs.height * 0.545;
     //Space between numbers
     score.space = cvs.width * 0.016;
+
+    //Score medals
+    medal.x = cvs.width * 0.197;
+    medal.y = cvs.height * 0.461;
+    medal.w = cvs.width * 0.152;
+    medal.h = cvs.height * 0.108;
 }
 
 //When window loads or resize
@@ -877,6 +942,7 @@ function draw()
     gameButtons.draw();
     gameOver.draw();
     score.draw();
+    medal.draw();
 }
 
 //UPDATE
