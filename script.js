@@ -25,21 +25,44 @@ const state =
 //This will fire up the fuction whenever the user clicks
 cvs.addEventListener("click", function(event) 
 { 
+    let rect = cvs.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+
     switch (state.current) 
     {
         case state.home:
-            state.current = state.getReady;
+            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
+               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
+             {
+                 state.current = state.getReady;
+             }
             break;
         case state.getReady:
             bird.flap();
-            birdFlapped = true;
+            birdFlapped = true;            
             state.current = state.game;
             break;
         case state.game:
             bird.flap();
             break;
         case state.gameOver:
-            state.current = state.home;
+            if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
+               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+            {
+                pipes.pipesReset();
+                bird.speedReset();
+                score.scoreReset();
+                state.current = state.getReady;
+            }
+            else if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
+                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+            {
+                pipes.pipesReset();
+                bird.speedReset();
+                score.scoreReset();
+                state.current = state.home;
+            }
             break;
     }        
 });
@@ -238,7 +261,8 @@ const bird =
         }  
     },
 
-    speedReset : function(){
+    speedReset : function()
+    {
         this.speed = 0;
     }
 }
@@ -267,7 +291,7 @@ const pipes =
     dx      : 0,
     gap     : 0,
     maxYPos : 0,
-    scored : false,
+    scored  : false,
 
     draw : function()
     {
@@ -395,7 +419,7 @@ const home =
 
     start_button : 
     {
-        spriteX: 388, spriteY: 171, 
+        spriteX: 227, spriteY: 0, 
         spriteW: 160, spriteH: 56,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -498,7 +522,7 @@ const getReady =
 
     tap : 
     {
-        spriteX: 232, spriteY: 0, 
+        spriteX: 0, spriteY: 0, 
         spriteW: 155, spriteH: 196,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -531,7 +555,7 @@ const gameButtons =
 {
     pause_button : 
     {
-        spriteX: 388, spriteY: 228, 
+        spriteX: 280, spriteY: 114, 
         spriteW: 52, spriteH: 56,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -539,7 +563,7 @@ const gameButtons =
 
     resume_button : 
     {
-        spriteX: 441, spriteY: 228, 
+        spriteX: 227, spriteY: 114, 
         spriteW: 52, spriteH: 56,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -579,9 +603,17 @@ const gameOver =
         w: 0, h: 0
     },
 
-    ok_button : 
+    home_button : 
     {
-        spriteX: 388, spriteY: 57, 
+        spriteX: 388, spriteY: 171, 
+        spriteW: 160, spriteH: 59,
+        x: 0, y: 0, 
+        w: 0, h: 0
+    },
+
+    restart_button : 
+    {
+        spriteX: 227, spriteY: 57, 
         spriteW: 160, spriteH: 56,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -607,10 +639,17 @@ const gameOver =
                          );
             ctx.drawImage(
                             sprite_sheet, 
-                            this.ok_button.spriteX, this.ok_button.spriteY, 
-                            this.ok_button.spriteW, this.ok_button.spriteH, 
-                            this.ok_button.x, this.ok_button.y, 
-                            this.ok_button.w, this.ok_button.h
+                            this.home_button.spriteX, this.home_button.spriteY, 
+                            this.home_button.spriteW, this.home_button.spriteH, 
+                            this.home_button.x, this.home_button.y, 
+                            this.home_button.w, this.home_button.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.restart_button.spriteX, this.restart_button.spriteY, 
+                            this.restart_button.spriteW, this.restart_button.spriteH, 
+                            this.restart_button.x, this.restart_button.y, 
+                            this.restart_button.w, this.restart_button.h
                          );
         }
     }
@@ -748,29 +787,34 @@ const medal =
     draw: function () 
     {
         let medalSpriteX;
+        let hasMedal = false;
         
         if (score.game_score >= 10 && score.game_score < 20) 
         {
             this.medal = "bronze";
             medalSpriteX = this.bronze;
+            hasMedal = true;
         } 
         else if (score.game_score >= 20 && score.game_score < 30) 
         {
             this.medal = "silver";
             medalSpriteX = this.silver;
+            hasMedal = true;
         }
         else if (score.game_score >= 30 && score.game_score < 40) 
         {
             this.medal = "gold";
             medalSpriteX = this.gold;
+            hasMedal = true;
         } 
         else if (score.game_score >= 40) 
         {
             this.medal = "platinum";
             medalSpriteX = this.platinum;
+            hasMedal = true;
         }
 
-        if (state.current == state.gameOver) 
+        if (state.current == state.gameOver && hasMedal) 
         {
             ctx.drawImage(
                             sprite_sheet,
@@ -879,18 +923,23 @@ function canvasScale()
     //"Game Over" message
     gameOver.game_over.x = cvs.width * 0.197;
     gameOver.game_over.y = cvs.height * 0.243;
-    gameOver.game_over.w = cvs.width * 0.6049;
+    gameOver.game_over.w = cvs.width * 0.645;
     gameOver.game_over.h = cvs.height * 0.095; 
     //Scoreboard
     gameOver.scoreboard.x = cvs.width * 0.107;
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
-    //Ok button
-    gameOver.ok_button.x = cvs.width * 0.359;
-    gameOver.ok_button.y = cvs.height * 0.759;
-    gameOver.ok_button.w = cvs.width * 0.276;
-    gameOver.ok_button.h = cvs.height * 0.068;
+    //Home button
+    gameOver.home_button.x = cvs.width * 0.576;
+    gameOver.home_button.y = cvs.height * 0.759;
+    gameOver.home_button.w = cvs.width * 0.276;
+    gameOver.home_button.h = cvs.height * 0.068;
+    //Restart button
+    gameOver.restart_button.x = cvs.width * 0.147;
+    gameOver.restart_button.y = cvs.height * 0.759;
+    gameOver.restart_button.w = cvs.width * 0.276;
+    gameOver.restart_button.h = cvs.height * 0.068;
 
     //SCORE
     //New best score label
