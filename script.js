@@ -5,7 +5,6 @@ const ctx = cvs.getContext("2d");
 //GAME VARIABLES AND CONSTANTS
 let frames = 0;
 let birdFlapped = false;
-let logoGoUp = true;
 const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
@@ -264,6 +263,7 @@ const pipes =
     dx      : 0,
     gap     : 0,
     maxYPos : 0,
+    scored : false,
 
     draw : function()
     {
@@ -308,7 +308,8 @@ const pipes =
             pipes.position.push(
             {
                 x : cvs.width,
-                y : pipes.maxYPos * (Math.random() + 1)
+                y : pipes.maxYPos * (Math.random() + 1),
+                scored : false
             });
         }
         
@@ -334,13 +335,33 @@ const pipes =
             //Moving the pipes
             p.x -= this.dx;
 
-            //Delete first half of positions array when it has 4 positions
-            if(this.position.length == 4)
+            //Deleting 1/3 of the pipes every 6 pipes
+            if (this.position.length == 6) 
             {
-                this.position.slice(0, 2);
+                this.position.splice(0, 2);
+            }
+            
+            //Update score when the bird passes a pipe
+            if (p.x + this.w < bird.x && !p.scored) 
+            {
+                score.game_score++;
+                
+                if(score.game_score > score.best_score)
+                {
+                    score.best_score = score.game_score;
+                    score.new_best_score = true;
+                }
+
+                localStorage.setItem("best_score", score.best_score);
+                p.scored = true;
             }
         }
     },
+
+    reset : function()
+    {
+        this.position = [];
+    }
 }
 
 //HOME
@@ -384,7 +405,8 @@ const home =
         w: 0, h: 0
     },
 
-    frame : 0,
+    frame    : 0,
+    logoGoUp : true,
 
     draw : function() 
     {
@@ -427,22 +449,22 @@ const home =
     {
         if (state.current == state.home) 
         {
-            if (logoGoUp) 
+            if (this.logoGoUp) 
             {
                 this.logo.y -= this.logo.dy;
                 this.bird.y -= this.logo.dy;
                 if(this.logo.y <= this.logo.MAXY) 
                 {
-                    logoGoUp = false;
+                    this.logoGoUp = false;
                 }
             }
-            if (!logoGoUp) 
+            if (!this.logoGoUp) 
             {
                 this.logo.y += this.logo.dy;
                 this.bird.y += this.logo.dy;
                 if(this.logo.y >= this.logo.MINY) 
                 {
-                    logoGoUp = true;
+                    this.logoGoUp = true;
                 }
             }
         }
@@ -464,14 +486,18 @@ const getReady =
 {
     get_ready : 
     {
-        spriteX: 552, spriteY: 324, spriteW: 348, spriteH: 87,
-        x: 0, y: 0, w: 0, h: 0
+        spriteX: 552, spriteY: 324, 
+        spriteW: 348, spriteH: 87,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     tap : 
     {
-        spriteX: 232, spriteY: 0, spriteW: 155, spriteH: 196,
-        x: 0, y: 0, w: 0, h: 0
+        spriteX: 232, spriteY: 0, 
+        spriteW: 155, spriteH: 196,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     draw : function() 
@@ -501,14 +527,18 @@ const gameButtons =
 {
     pause_button : 
     {
-        spriteX: 388, spriteY: 228, spriteW: 52, spriteH: 56,
-        x: 0, y: 0, w: 0, h: 0
+        spriteX: 388, spriteY: 228, 
+        spriteW: 52, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     resume_button : 
     {
-        spriteX: 441, spriteY: 228, spriteW: 52, spriteH: 56,
-        x: 0, y: 0, w: 0, h: 0
+        spriteX: 441, spriteY: 228, 
+        spriteW: 52, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0
     },
 
     draw : function() 
@@ -579,6 +609,118 @@ const gameOver =
                             this.ok_button.w, this.ok_button.h
                          );
         }
+    }
+}
+
+//SCORE
+const score = 
+{
+    new_best :
+    {
+        spriteX: 921, spriteY: 349, 
+        spriteW: 64, spriteH: 28,
+        x: 0, y: 0, 
+        w: 0, h: 0
+    },
+
+    number : 
+    [
+        {spriteX :  98}, //0
+        {spriteX : 127}, //1
+        {spriteX : 156}, //2
+        {spriteX : 185}, //3
+        {spriteX : 214}, //4
+        {spriteX : 243}, //5
+        {spriteX : 272}, //6 
+        {spriteX : 301}, //7
+        {spriteX : 330}, //8
+        {spriteX : 359}  //9
+    ],
+    spriteY : 243, 
+    spriteW : 28, 
+    spriteH : 40,
+    x : 0,
+    y : 0,
+    w : 0,
+    y : 0,
+    score : {x: 0, y: 0, w: 0, h: 0},
+    best  : {x: 0, y: 0, w: 0, h: 0},
+    space : 0,
+
+    //If local storage is empty for best_score, best_score is 0
+    best_score : parseInt(localStorage.getItem("best_score")) || 0,
+    game_score : 0,
+    new_best_score : false,
+
+    draw : function()
+    {
+        let game_score_s = this.game_score.toString();
+        let best_score_s = this.best_score.toString();
+
+        if(state.current == state.game)
+        {
+            //Total width of the game score
+            let total_width = game_score_s.length * (this.w + this.space) - this.space;
+            //Offset for the game score to center it horizontally
+            let offset = this.x - total_width / 2;
+            
+            for(let i = 0; i < game_score_s.length; i++)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.number[parseInt(game_score_s[i])].spriteX, this.spriteY, 
+                                this.spriteW, this.spriteH, 
+                                offset, this.y,
+                                this.w, this.h
+                             );
+                offset = offset + this.w + this.space;
+            }
+        }
+        else if(state.current == state.gameOver)
+        {
+            let offset_1 = 0;
+            let offset_2 = 0;
+
+            for(let i = game_score_s.length - 1; i >= 0; i--)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.number[parseInt(game_score_s[i])].spriteX, this.spriteY, 
+                                this.spriteW, this.spriteH, 
+                                this.score.x + offset_1, this.score.y, 
+                                this.w, this.h
+                            );
+                offset_1 = offset_1 - this.w - this.space;
+            }
+
+            for(let i = best_score_s.length - 1; i >= 0; i--)
+            {     
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.number[parseInt(best_score_s[i])].spriteX, this.spriteY, 
+                                this.spriteW, this.spriteH, 
+                                this.best.x + offset_2, this.best.y, 
+                                this.w, this.h
+                            );
+                offset_2 = offset_2 - this.w - this.space;
+            }
+
+            if(this.new_best_score)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.new_best.spriteX, this.new_best.spriteY, 
+                                this.new_best.spriteW, this.new_best.spriteH, 
+                                this.new_best.x, this.new_best.y, 
+                                this.new_best.w, this.new_best.h
+                             ); 
+            }            
+        }
+    },
+
+    reset : function()
+    {
+        this.score = 0;
     }
 }
 
@@ -679,7 +821,7 @@ function canvasScale()
     gameOver.game_over.x = cvs.width * 0.197;
     gameOver.game_over.y = cvs.height * 0.243;
     gameOver.game_over.w = cvs.width * 0.6049;
-    gameOver.game_over.h = cvs.height * 0.095;  
+    gameOver.game_over.h = cvs.height * 0.095; 
     //Scoreboard
     gameOver.scoreboard.x = cvs.width * 0.107;
     gameOver.scoreboard.y = cvs.height * 0.355;
@@ -690,6 +832,27 @@ function canvasScale()
     gameOver.ok_button.y = cvs.height * 0.759;
     gameOver.ok_button.w = cvs.width * 0.276;
     gameOver.ok_button.h = cvs.height * 0.068;
+
+    //SCORE
+    //New best score label
+    score.new_best.x = cvs.width * 0.577;
+    score.new_best.y = cvs.height * 0.500;
+    score.new_best.w = cvs.width * 0.112;
+    score.new_best.h = cvs.height * 0.035;
+    //Width & height for every number
+    score.w = cvs.width * 0.048;
+    score.h = cvs.height * 0.046;
+    //Score on game screen
+    score.x = cvs.width * 0.476;
+    score.y = cvs.height * 0.045;
+    //Score on game over screen
+    score.score.x = cvs.width * 0.769;
+    score.score.y = cvs.height * 0.441;
+    //Best score on game screen
+    score.best.x = cvs.width * 0.769;
+    score.best.y = cvs.height * 0.545;
+    //Space between numbers
+    score.space = cvs.width * 0.016;
 }
 
 //When window loads or resize
@@ -713,6 +876,7 @@ function draw()
     getReady.draw();
     gameButtons.draw();
     gameOver.draw();
+    score.draw();
 }
 
 //UPDATE
