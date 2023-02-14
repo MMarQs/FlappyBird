@@ -11,6 +11,22 @@ const DEGREE = Math.PI/180;
 const sprite_sheet = new Image();
 sprite_sheet.src = "img/sprite_sheet.png"
 
+//LOAD SOUNDS
+const DIE = new Audio();
+DIE.src = "audio/die.wav";
+
+const FLAP = new Audio();
+FLAP.src = "audio/flap.wav";
+
+const HIT = new Audio();
+HIT.src = "audio/hit.wav";
+
+const POINT = new Audio();
+POINT.src = "audio/point.wav";
+
+const SWOOSH = new Audio();
+SWOOSH.src = "audio/swooshing.wav";
+
 //GAME STATES
 const state = 
 {
@@ -34,17 +50,22 @@ cvs.addEventListener("click", function(event)
         case state.home:
             if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
                clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
-             {
-                 state.current = state.getReady;
-             }
+            {
+                state.current = state.getReady;
+                SWOOSH.currentTime = 0;
+                SWOOSH.play();
+            }
             break;
         case state.getReady:
             bird.flap();
+            FLAP.play();
             birdFlapped = true;            
             state.current = state.game;
             break;
         case state.game:
             bird.flap();
+            FLAP.currentTime = 0;
+            FLAP.play();
             break;
         case state.gameOver:
             if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
@@ -54,6 +75,8 @@ cvs.addEventListener("click", function(event)
                 bird.speedReset();
                 score.scoreReset();
                 state.current = state.getReady;
+                SWOOSH.currentTime = 0;
+                SWOOSH.play();
             }
             else if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
                     clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
@@ -62,6 +85,8 @@ cvs.addEventListener("click", function(event)
                 bird.speedReset();
                 score.scoreReset();
                 state.current = state.home;
+                SWOOSH.currentTime = 0;
+                SWOOSH.play();
             }
             break;
     }        
@@ -74,8 +99,9 @@ document.addEventListener("keydown", function(event)
     {
         switch (state.current) 
         {
-            case state.getReady:
+            case state.getReady:                
                 bird.flap();
+                FLAP.play();
                 birdFlapped = true;
                 state.current = state.game;
                 break;
@@ -83,6 +109,8 @@ document.addEventListener("keydown", function(event)
                 if (!birdFlapped) 
                 {
                     bird.flap();
+                    FLAP.currentTime = 0;
+                    FLAP.play();
                     birdFlapped = true;
                 }
                 break;
@@ -244,6 +272,12 @@ const bird =
                 if(state.current == state.game)
                 {
                     state.current = state.gameOver;
+                    HIT.play();
+                    setTimeout(function()
+                    {
+                        SWOOSH.currentTime = 0;
+                        SWOOSH.play();
+                    }, 500)
                 }
             }
 
@@ -352,12 +386,26 @@ const pipes =
                bird.y + bird.radius > p.y && bird.y - bird.radius < p.y + this.h)
             {
                 state.current = state.gameOver;
+                HIT.play();
+                setTimeout(function() {
+                    if (state.current === state.gameOver) {
+                      DIE.currentTime = 0;
+                      DIE.play();
+                    }
+                  }, 500)
             }
             //Bottom pipe
             if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
                bird.y + bird.radius > bottomYPos && bird.y - bird.radius < bottomYPos + this.h)
             {
                 state.current = state.gameOver;
+                HIT.play();
+                setTimeout(function() {
+                    if (state.current === state.gameOver) {
+                      DIE.currentTime = 0;
+                      DIE.play();
+                    }
+                  }, 500)                  
             }
 
             //Moving the pipes
@@ -373,6 +421,7 @@ const pipes =
             if (p.x + this.w < bird.x && !p.scored) 
             {
                 score.game_score++;
+                POINT.play();
                 
                 if(score.game_score > score.best_score)
                 {
@@ -763,7 +812,7 @@ const score =
 
     scoreReset : function()
     {
-        this.score = 0;
+        this.game_score = 0;
     }
 }
 
@@ -969,7 +1018,7 @@ function canvasScale()
     medal.h = cvs.height * 0.108;
 }
 
-//When window loads or resize
+//When window loads or resizes
 window.addEventListener("load", () => {
     canvasScale();
     window.addEventListener("resize", canvasScale);
