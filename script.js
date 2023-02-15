@@ -735,6 +735,7 @@ const score =
     y : 0,
     w : 0,
     y : 0,
+    one_w : 0,
     score : {x: 0, y: 0, w: 0, h: 0},
     best  : {x: 0, y: 0, w: 0, h: 0},
     space : 0,
@@ -751,28 +752,56 @@ const score =
 
         if(state.current == state.game)
         {
-            //Total width of the game score
-            let total_width = game_score_s.length * (this.w + this.space) - this.space;
+            let total_width = 0;
+            for (let i = 0; i < game_score_s.length; i++) 
+            {
+                if (game_score_s[i] == 1) 
+                {
+                    total_width += this.one_w + this.space;
+                } 
+                else 
+                {
+                    total_width += this.w + this.space;
+                }
+            }
+            //Subtracts the extra space at the end
+            total_width -= this.space;
+
             //Offset for the game score to center it horizontally
-            let offset = this.x - total_width / 2;
+            let offset = this.x - total_width / 2 + (this.w / 2);
             
             for(let i = 0; i < game_score_s.length; i++)
             {
-                ctx.drawImage(
-                                sprite_sheet, 
-                                this.number[parseInt(game_score_s[i])].spriteX, this.spriteY, 
-                                this.spriteW, this.spriteH, 
-                                offset, this.y,
-                                this.w, this.h
-                             );
-                offset = offset + this.w + this.space;
-            }
+                //If i isn't last digit and next digit is 1, use one_width for current digit to create space between digits
+                if (i < game_score_s.length - 1 && game_score_s[i+1] == 1) 
+                {
+                    ctx.drawImage(
+                                    sprite_sheet, 
+                                    this.number[parseInt(game_score_s[i])].spriteX, this.spriteY, 
+                                    this.spriteW, this.spriteH, 
+                                    offset, this.y,
+                                    this.w, this.h
+                                 );
+                    offset = offset + this.one_w + this.space;
+                } 
+                //If i is last digit or next digit isn't 1, use full width for current digit
+                else 
+                {
+                    ctx.drawImage(
+                                    sprite_sheet, 
+                                    this.number[parseInt(game_score_s[i])].spriteX, this.spriteY, 
+                                    this.spriteW, this.spriteH, 
+                                    offset, this.y,
+                                    this.w, this.h
+                                 );
+                    offset = offset + this.w + this.space;
+                }
+            }            
         }
         else if(state.current == state.gameOver)
         {
             let offset_1 = 0;
-            let offset_2 = 0;
-
+            //Game score on Game Over screen
             for(let i = game_score_s.length - 1; i >= 0; i--)
             {
                 ctx.drawImage(
@@ -782,9 +811,18 @@ const score =
                                 this.score.x + offset_1, this.score.y, 
                                 this.w, this.h
                             );
-                offset_1 = offset_1 - this.w - this.space;
+                if(parseInt(game_score_s[i]) == 1)
+                {
+                    offset_1 = offset_1 - this.one_w - this.space;
+                }
+                else
+                {
+                    offset_1 = offset_1 - this.w - this.space;
+                }
             }
 
+            let offset_2 = 0;
+            //Best score on Game Over screen
             for(let i = best_score_s.length - 1; i >= 0; i--)
             {     
                 ctx.drawImage(
@@ -794,9 +832,16 @@ const score =
                                 this.best.x + offset_2, this.best.y, 
                                 this.w, this.h
                             );
-                offset_2 = offset_2 - this.w - this.space;
+                if(parseInt(best_score_s[i]) == 1)
+                {
+                    offset_2 = offset_2 - this.one_w - this.space;
+                }
+                else
+                {
+                    offset_2 = offset_2 - this.w - this.space;
+                }
             }
-
+            
             if(this.new_best_score)
             {
                 ctx.drawImage(
@@ -813,6 +858,7 @@ const score =
     scoreReset : function()
     {
         this.game_score = 0;
+        this.new_best_score = false;
     }
 }
 
@@ -999,6 +1045,7 @@ function canvasScale()
     //Width & height for every number
     score.w = cvs.width * 0.048;
     score.h = cvs.height * 0.046;
+    score.one_w = cvs.width * 0.032
     //Score on game screen
     score.x = cvs.width * 0.476;
     score.y = cvs.height * 0.045;
@@ -1039,8 +1086,8 @@ function draw()
     getReady.draw();
     gameButtons.draw();
     gameOver.draw();
-    score.draw();
     medal.draw();
+    score.draw();
 }
 
 //UPDATE
