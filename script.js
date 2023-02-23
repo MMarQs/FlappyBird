@@ -367,10 +367,10 @@ const pipes =
         //Every 80 frames add a new position to our position array
         if(frames%80 == 0) 
         {
-            pipes.position.push(
+            this.position.push(
             {
                 x : cvs.width,
-                y : pipes.maxYPos * (Math.random() + 1),
+                y : this.maxYPos * (Math.random() + 1),
                 scored : false
             });
         }
@@ -387,12 +387,14 @@ const pipes =
             {
                 state.current = state.gameOver;
                 HIT.play();
-                setTimeout(function() {
-                    if (state.current === state.gameOver) {
-                      DIE.currentTime = 0;
-                      DIE.play();
+                setTimeout(function() 
+                {
+                    if (state.current == state.gameOver) 
+                    {
+                        DIE.currentTime = 0;
+                        DIE.play();
                     }
-                  }, 500)
+                }, 500)
             }
             //Bottom pipe
             if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
@@ -400,12 +402,14 @@ const pipes =
             {
                 state.current = state.gameOver;
                 HIT.play();
-                setTimeout(function() {
-                    if (state.current === state.gameOver) {
-                      DIE.currentTime = 0;
-                      DIE.play();
+                setTimeout(function() 
+                {
+                    if (state.current == state.gameOver) 
+                    {
+                        DIE.currentTime = 0;
+                        DIE.play();
                     }
-                  }, 500)                  
+                }, 500)                  
             }
 
             //Moving the pipes
@@ -455,9 +459,9 @@ const home =
 
     animation : 
     [
-        {spriteX: 932, spriteY: 429, spriteW: 68, spriteH: 48},
-        {spriteX: 932, spriteY: 478, spriteW: 68, spriteH: 48},
-        {spriteX: 932, spriteY: 527, spriteW: 68, spriteH: 48}
+        {spriteX: 931, spriteY: 429, spriteW: 68, spriteH: 48},
+        {spriteX: 931, spriteY: 478, spriteW: 68, spriteH: 48},
+        {spriteX: 931, spriteY: 527, spriteW: 68, spriteH: 48}
     ],
 
     bird : 
@@ -546,11 +550,7 @@ const home =
             }
         }
 
-        //The bird must flap slowly on home state
-        if(state.current == state.home)
-        {
-            this.period = 6;
-        }
+        this.period = 6;
         //Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
         //Frame goes from 0 to 3, then again to 0
@@ -564,7 +564,7 @@ const getReady =
     get_ready : 
     {
         spriteX: 552, spriteY: 321, 
-        spriteW: 348, spriteH: 87,
+        spriteW: 349, spriteH: 87,
         x: 0, y: 0, 
         w: 0, h: 0
     },
@@ -638,7 +638,7 @@ const gameOver =
 {
     game_over : 
     {
-        spriteX: 552, spriteY: 410, 
+        spriteX: 553, spriteY: 410, 
         spriteW: 376, spriteH: 75,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -736,9 +736,9 @@ const score =
     w : 0,
     y : 0,
     one_w : 0,
+    space : 0,
     score : {x: 0, y: 0, w: 0, h: 0},
     best  : {x: 0, y: 0, w: 0, h: 0},
-    space : 0,
 
     //If local storage is empty for best_score, best_score is 0
     best_score : parseInt(localStorage.getItem("best_score")) || 0,
@@ -877,39 +877,34 @@ const medal =
     w : 0,
     h : 0,
 
-    medal: "",
+    medal: "",     
 
     draw: function () 
     {
         let medalSpriteX;
-        let hasMedal = false;
         
         if (score.game_score >= 10 && score.game_score < 20) 
         {
             this.medal = "bronze";
             medalSpriteX = this.bronze;
-            hasMedal = true;
         } 
         else if (score.game_score >= 20 && score.game_score < 30) 
         {
             this.medal = "silver";
             medalSpriteX = this.silver;
-            hasMedal = true;
         }
         else if (score.game_score >= 30 && score.game_score < 40) 
         {
             this.medal = "gold";
             medalSpriteX = this.gold;
-            hasMedal = true;
         } 
         else if (score.game_score >= 40) 
         {
             this.medal = "platinum";
             medalSpriteX = this.platinum;
-            hasMedal = true;
         }
 
-        if (state.current == state.gameOver && hasMedal) 
+        if (state.current == state.gameOver && score.game_score >= 10) 
         {
             ctx.drawImage(
                             sprite_sheet,
@@ -917,9 +912,9 @@ const medal =
                             this.spriteW, this.spriteH, 
                             this.x, this.y, 
                             this.w, this.h
-                         );  
+                         ); 
         }
-    }  
+    }
 }
 
 //CANVAS SCALE
@@ -1016,7 +1011,7 @@ function canvasScale()
 
     //GAME OVER
     //"Game Over" message
-    gameOver.game_over.x = cvs.width * 0.197;
+    gameOver.game_over.x = cvs.width * 0.182;
     gameOver.game_over.y = cvs.height * 0.243;
     gameOver.game_over.w = cvs.width * 0.645;
     gameOver.game_over.h = cvs.height * 0.095; 
@@ -1058,7 +1053,7 @@ function canvasScale()
     //Space between numbers
     score.space = cvs.width * 0.016;
 
-    //Score medals
+    //SCORE MEDALS
     medal.x = cvs.width * 0.197;
     medal.y = cvs.height * 0.461;
     medal.w = cvs.width * 0.152;
@@ -1102,10 +1097,14 @@ function update()
 //LOOP
 function loop() 
 {
-    update();
-    draw();
-    frames++;
-    requestAnimationFrame(loop);
+    //Update rate: 75FPS
+    setTimeout(function() 
+    {
+        update();
+        draw();
+        frames++;
+        requestAnimationFrame(loop);
+    }, (1 / 75) * 1000);
 }
 
 loop();
