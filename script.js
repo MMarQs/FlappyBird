@@ -865,6 +865,7 @@ const score =
 //SCORE MEDALS
 const medal = 
 {
+    //Medal's variables
     bronze   : {spriteX: 554},
     silver   : {spriteX: 642},
     gold     : {spriteX: 731},
@@ -877,7 +878,22 @@ const medal =
     w : 0,
     h : 0,
 
-    medal: "",     
+    medal: "",
+
+    //Shine animation's variables
+    animation : 
+    [
+        {spriteX: 922, spriteY: 386, spriteW: 20, spriteH: 20},
+        {spriteX: 943, spriteY: 386, spriteW: 20, spriteH: 20},
+        {spriteX: 964, spriteY: 386, spriteW: 20, spriteH: 20},
+        {spriteX: 943, spriteY: 386, spriteW: 20, spriteH: 20},
+        {spriteX: 922, spriteY: 386, spriteW: 20, spriteH: 20}
+    ],
+    animation_w : 0,
+    animation_h : 0,
+    shine_position : [],
+    frame  : 0,
+    radius : 0,      
 
     draw: function () 
     {
@@ -913,6 +929,50 @@ const medal =
                             this.x, this.y, 
                             this.w, this.h
                          ); 
+
+            let shine = this.animation[this.frame];
+            for (let i = 0; i < this.shine_position.length; i++) 
+            {
+                let position = this.shine_position[i];
+
+                ctx.drawImage(
+                                sprite_sheet,
+                                shine.spriteX, shine.spriteY,
+                                shine.spriteW, shine.spriteH,
+                                position.x, position.y,
+                                this.animation_w, this.animation_h
+                             );  
+            }
+        }
+    },
+    
+    update: function() 
+    {
+        //How often the shine effect should be updated, in frames
+        this.period = 7;
+        //Incrementing the frame by 1, each period
+        this.frame += frames % this.period == 0 ? 1 : 0;
+        //Frame goes from 0 to 5, then again to 0
+        this.frame = this.frame % this.animation.length; 
+
+        //Resetting shine_position array after last frame so only 1 animation is drawn at a time
+        if (this.frame == this.animation.length - 1)
+            this.shine_position = [];
+
+        if (frames % (this.period * this.animation.length) == 0) 
+        {
+            //How far from the circle's center the shine animation can appear
+            const limit = 0.9 * this.radius;
+            //Direction the shine animation will appear in
+            const angle = Math.random() * Math.PI * 2;
+            //How far from the center the shine animation will appear 
+            const distance = Math.random() * limit;
+    
+            this.shine_position.push(
+            {
+                x: this.centerX + Math.cos(angle) * distance,
+                y: this.centerY + Math.sin(angle) * distance
+            });
         }
     }
 }
@@ -1054,10 +1114,29 @@ function canvasScale()
     score.space = cvs.width * 0.016;
 
     //SCORE MEDALS
+    //Medals
     medal.x = cvs.width * 0.197;
     medal.y = cvs.height * 0.461;
     medal.w = cvs.width * 0.152;
     medal.h = cvs.height * 0.108;
+    //Shine Animation
+    for(let i = 0; i < medal.shine_position.length; i++)
+    {
+        let w = medal.animation_w / 0.034;
+        let h = medal.animation_w / 0.023;
+        let position = medal.shine_position[i];
+
+        medal.shine_position[i] = 
+        {
+            x : position.x * cvs.width / w,
+            y : position.y * cvs.height / h
+        }
+    }
+    medal.radius = cvs.width * 0.061;
+    medal.centerX = cvs.width * 0.257;
+    medal.centerY = cvs.height * 0.506;
+    medal.animation_w = cvs.width * 0.034;
+    medal.animation_h = cvs.height * 0.023;
 }
 
 //When window loads or resizes
@@ -1092,6 +1171,7 @@ function update()
     foreground.update();
     home.update();
     pipes.update();
+    medal.update();
 }
 
 //LOOP
