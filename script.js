@@ -5,6 +5,8 @@ const ctx = cvs.getContext("2d");
 //GAME VARIABLES AND CONSTANTS
 let frames = 0;
 let birdFlapped = false;
+let gamePaused = false;
+let pPressed = false;
 const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
@@ -63,9 +65,17 @@ cvs.addEventListener("click", function(event)
             state.current = state.game;
             break;
         case state.game:
-            bird.flap();
-            FLAP.currentTime = 0;
-            FLAP.play();
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                gamePaused = gamePaused ? false : true;
+            }
+            else
+            {
+                bird.flap();
+                FLAP.currentTime = 0;
+                FLAP.play();
+            }
             break;
         case state.gameOver:
             if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
@@ -106,7 +116,7 @@ document.addEventListener("keydown", function(event)
                 state.current = state.game;
                 break;
             case state.game:
-                if (!birdFlapped) 
+                if (!birdFlapped && !gamePaused) 
                 {
                     bird.flap();
                     FLAP.currentTime = 0;
@@ -115,7 +125,15 @@ document.addEventListener("keydown", function(event)
                 }
                 break;
         } 
-    }        
+    }
+    else if (event.key === "p") 
+    {
+        if (state.current == state.game && !pPressed) 
+        {
+            gamePaused = gamePaused ? false : true;
+            pPressed = true;
+        }
+    }          
 });
 
 //This will fire up the fuction whenever the user stop pressing space
@@ -125,6 +143,10 @@ document.addEventListener("keyup", function(event)
     {
         birdFlapped = false;
     } 
+    else if (event.key === "p" && state.current == state.game)
+    {
+        pPressed = false;  
+    }  
 });
 
 //BACKGROUND
@@ -622,13 +644,26 @@ const gameButtons =
     {
         if(state.current == state.game)
         {
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.pause_button.spriteX, this.pause_button.spriteY, 
-                            this.pause_button.spriteW, this.pause_button.spriteH, 
-                            this.x, this.y, 
-                            this.w, this.h
-                         );
+            if(!gamePaused)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.pause_button.spriteX, this.pause_button.spriteY, 
+                                this.pause_button.spriteW, this.pause_button.spriteH, 
+                                this.x, this.y, 
+                                this.w, this.h
+                             );
+            }
+            else if(gamePaused)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.resume_button.spriteX, this.resume_button.spriteY, 
+                                this.resume_button.spriteW, this.resume_button.spriteH, 
+                                this.x, this.y, 
+                                this.w, this.h
+                             ); 
+            }
         }
     }
 }
@@ -1167,10 +1202,14 @@ function draw()
 //UPDATE
 function update() 
 {
-    bird.update();
-    foreground.update();
+    //Update position and state of bird, foreground and pipes only if game isn't paused
+    if(!gamePaused)
+    {
+        bird.update();
+        foreground.update();
+        pipes.update();
+    }
     home.update();
-    pipes.update();
     medal.update();
 }
 
@@ -1182,7 +1221,11 @@ function loop()
     {
         update();
         draw();
-        frames++;
+        //Increment frames only if game isn't paused
+        if(!gamePaused)
+        {
+            frames++;
+        }
         requestAnimationFrame(loop);
     }, (1 / 75) * 1000);
 }
