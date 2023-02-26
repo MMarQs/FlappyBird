@@ -7,6 +7,7 @@ let frames = 0;
 let birdFlapped = false;
 let gamePaused = false;
 let pPressed = false;
+let mouseDown = false;
 const DEGREE = Math.PI/180;
 
 //LOAD SPRITE SHEET
@@ -40,7 +41,7 @@ const state =
 }
 
 //CONTROL THE GAME
-//This will fire up the fuction whenever the user clicks
+//Control when the player clicks
 cvs.addEventListener("click", function(event) 
 { 
     let rect = cvs.getBoundingClientRect();
@@ -70,7 +71,7 @@ cvs.addEventListener("click", function(event)
             {
                 gamePaused = gamePaused ? false : true;
             }
-            else
+            else if(!gamePaused)
             {
                 bird.flap();
                 FLAP.currentTime = 0;
@@ -102,7 +103,7 @@ cvs.addEventListener("click", function(event)
     }        
 });
 
-//This will fire up the fuction whenever the user presses space
+//Control when the player presses a key
 document.addEventListener("keydown", function(event) 
 { 
     if (event.key === " ") 
@@ -136,7 +137,7 @@ document.addEventListener("keydown", function(event)
     }          
 });
 
-//This will fire up the fuction whenever the user stop pressing space
+//Control when the player stops pressing a key
 document.addEventListener("keyup", function(event) 
 { 
     if (event.key === " " && state.current == state.game)
@@ -147,6 +148,146 @@ document.addEventListener("keyup", function(event)
     {
         pPressed = false;  
     }  
+});
+
+//Control when the player clicks the left mouse button
+cvs.addEventListener("mousedown", function(event) 
+{
+    let rect = cvs.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+
+    switch (state.current) 
+    {
+        case state.home: 
+            mouseDown = true;
+            //Start button
+            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
+               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
+            {
+                //If player is clicking on Start Button
+                home.start_button.isPressed = true;
+            }
+            break;
+        case state.gameOver:
+            mouseDown = true;
+            //Restart button
+            if(mouseDown &&
+               clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
+               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+            {
+                //If player is clicking on Restart Button
+                gameOver.restart_button.isPressed = true;
+            }
+            //Home button
+            else if(mouseDown &&
+                    clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
+                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+            {
+                //If player is clicking on Home Button
+                gameOver.home_button.isPressed = true;
+            }
+            break;
+    }
+});
+
+//Control when the player stops clicking the left mouse button
+cvs.addEventListener("mouseup", function(event) 
+{
+    let rect = cvs.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+
+    switch (state.current) 
+    {
+        case state.home: 
+            mouseDown = false;
+            //Start button
+            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
+               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
+            {
+                //If player stops clicking on Home button
+                home.start_button.isPressed = false;
+            }
+            break;
+        case state.gameOver:
+            mouseDown = false;
+            //Restart button
+            if(mouseDown &&
+               clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
+               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+            {
+                //If player stops clicking on Restart button
+                gameOver.restart_button.isPressed = false;
+            }
+            //Home button
+            else if(mouseDown &&
+                    clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
+                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+            {
+                //If player stops clicking on Home button
+                gameOver.home_button.isPressed = false;
+            }
+            break;
+    }
+});
+
+//Control when the player moves the mouse away from the buttons
+cvs.addEventListener("mousemove", function(event) 
+{
+    let rect = cvs.getBoundingClientRect();
+    let clickX = event.clientX - rect.left;
+    let clickY = event.clientY - rect.top;
+
+    switch (state.current) 
+    {
+        case state.home:
+            //Start button
+            if(mouseDown)
+            {
+                if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
+                   clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
+                {
+                    //If player is clicking and goes to Start Button
+                    home.start_button.isPressed = true;
+                }
+                else
+                {
+                    home.start_button.isPressed = false;
+                }
+            }
+            break;
+        case state.gameOver:
+            //Restart button
+            if(mouseDown)
+            {
+                if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
+                   clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+                {
+                    //If player is clicking and goes to Restart Button
+                    gameOver.restart_button.isPressed = true;
+                }
+                else
+                {
+                    gameOver.restart_button.isPressed = false;
+                }
+            }
+            //Home button
+            if(mouseDown)
+            {
+                if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
+                   clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+                {
+                    //If player is clicking and goes to Home Button
+                    gameOver.home_button.isPressed = true;
+                }
+                else
+                {
+                    gameOver.home_button.isPressed = false;
+                }
+            }
+            break;
+    }
 });
 
 //BACKGROUND
@@ -497,7 +638,9 @@ const home =
         spriteX: 227, spriteY: 0, 
         spriteW: 160, spriteH: 56,
         x: 0, y: 0, 
-        w: 0, h: 0
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
     },
 
     studio_name : 
@@ -514,6 +657,7 @@ const home =
     draw : function() 
     {
         let bird = this.animation[this.frame];
+        let button_y = this.start_button.isPressed ? this.start_button.y_pressed : this.start_button.y;
 
         if(state.current == state.home)
         {
@@ -535,7 +679,7 @@ const home =
                             sprite_sheet, 
                             this.start_button.spriteX, this.start_button.spriteY, 
                             this.start_button.spriteW, this.start_button.spriteH, 
-                            this.start_button.x, this.start_button.y, 
+                            this.start_button.x, button_y, 
                             this.start_button.w, this.start_button.h
                          );
             ctx.drawImage(
@@ -692,7 +836,9 @@ const gameOver =
         spriteX: 388, spriteY: 171, 
         spriteW: 160, spriteH: 59,
         x: 0, y: 0, 
-        w: 0, h: 0
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
     },
 
     restart_button : 
@@ -700,13 +846,18 @@ const gameOver =
         spriteX: 227, spriteY: 57, 
         spriteW: 160, spriteH: 56,
         x: 0, y: 0, 
-        w: 0, h: 0
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
     },
 
     draw : function() 
     {
         if(state.current == state.gameOver)
         {
+            let restart_button_y = this.restart_button.isPressed ? this.restart_button.y_pressed : this.restart_button.y;
+            let home_button_y = this.home_button.isPressed ? this.home_button.y_pressed : this.home_button.y;
+
             ctx.drawImage(
                             sprite_sheet, 
                             this.game_over.spriteX, this.game_over.spriteY, 
@@ -723,17 +874,17 @@ const gameOver =
                          );
             ctx.drawImage(
                             sprite_sheet, 
-                            this.home_button.spriteX, this.home_button.spriteY, 
-                            this.home_button.spriteW, this.home_button.spriteH, 
-                            this.home_button.x, this.home_button.y, 
-                            this.home_button.w, this.home_button.h
+                            this.restart_button.spriteX, this.restart_button.spriteY, 
+                            this.restart_button.spriteW, this.restart_button.spriteH, 
+                            this.restart_button.x, restart_button_y, 
+                            this.restart_button.w, this.restart_button.h
                          );
             ctx.drawImage(
                             sprite_sheet, 
-                            this.restart_button.spriteX, this.restart_button.spriteY, 
-                            this.restart_button.spriteW, this.restart_button.spriteH, 
-                            this.restart_button.x, this.restart_button.y, 
-                            this.restart_button.w, this.restart_button.h
+                            this.home_button.spriteX, this.home_button.spriteY, 
+                            this.home_button.spriteW, this.home_button.spriteH, 
+                            this.home_button.x, home_button_y, 
+                            this.home_button.w, this.home_button.h
                          );
         }
     }
@@ -1077,6 +1228,7 @@ function canvasScale()
     //Start Button
     home.start_button.x = cvs.width * 0.359;
     home.start_button.y = cvs.height * 0.759;
+    home.start_button.y_pressed = cvs.height * 0.763;
     home.start_button.w = cvs.width * 0.276;
     home.start_button.h = cvs.height * 0.068;
     //Studio Name
@@ -1115,16 +1267,18 @@ function canvasScale()
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
-    //Home button
-    gameOver.home_button.x = cvs.width * 0.576;
-    gameOver.home_button.y = cvs.height * 0.759;
-    gameOver.home_button.w = cvs.width * 0.276;
-    gameOver.home_button.h = cvs.height * 0.068;
     //Restart button
     gameOver.restart_button.x = cvs.width * 0.147;
     gameOver.restart_button.y = cvs.height * 0.759;
+    gameOver.restart_button.y_pressed = cvs.height * 0.763;
     gameOver.restart_button.w = cvs.width * 0.276;
     gameOver.restart_button.h = cvs.height * 0.068;
+    //Home button
+    gameOver.home_button.x = cvs.width * 0.576;
+    gameOver.home_button.y = cvs.height * 0.759;
+    gameOver.home_button.y_pressed = cvs.height * 0.763;
+    gameOver.home_button.w = cvs.width * 0.276;
+    gameOver.home_button.h = cvs.height * 0.068;
 
     //SCORE
     //New best score label
