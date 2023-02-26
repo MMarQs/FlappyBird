@@ -85,6 +85,7 @@ cvs.addEventListener("click", function(event)
                 pipes.pipesReset();
                 bird.speedReset();
                 score.scoreReset();
+                gameOver.restart_button.isPressed = false;
                 state.current = state.getReady;
                 SWOOSH.currentTime = 0;
                 SWOOSH.play();
@@ -95,6 +96,7 @@ cvs.addEventListener("click", function(event)
                 pipes.pipesReset();
                 bird.speedReset();
                 score.scoreReset();
+                gameOver.home_button.isPressed = false;
                 state.current = state.home;
                 SWOOSH.currentTime = 0;
                 SWOOSH.play();
@@ -376,7 +378,8 @@ const bird =
     jump     : 0,
     speed    : 0,
     rotation : 0,
-    radius   : 0,
+    radius_x : 0,
+    radius_y : 0,
 
     draw : function() 
     {
@@ -471,7 +474,7 @@ const pipes =
     
     top :
     {
-        spriteX: 1000, spriteY: 0, 
+        spriteX: 1001, spriteY: 0, 
         spriteW: 104, spriteH: 800,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -479,7 +482,7 @@ const pipes =
 
     bottom : 
     {
-        spriteX: 1104, spriteY: 0, 
+        spriteX: 1105, spriteY: 0, 
         spriteW: 104, spriteH: 800,
         x: 0, y: 0, 
         w: 0, h: 0
@@ -545,8 +548,8 @@ const pipes =
 
             //COLLISION DETECTION
             //Top pipe
-            if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
-               bird.y + bird.radius > p.y && bird.y - bird.radius < p.y + this.h)
+            if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
+               bird.y + bird.radius_y > p.y && bird.y - bird.radius_y < p.y + this.h)
             {
                 state.current = state.gameOver;
                 HIT.play();
@@ -560,8 +563,8 @@ const pipes =
                 }, 500)
             }
             //Bottom pipe
-            if(bird.x + bird.radius > p.x && bird.x - bird.radius < p.x + this.w &&
-               bird.y + bird.radius > bottomYPos && bird.y - bird.radius < bottomYPos + this.h)
+            if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
+               bird.y + bird.radius_y > bottomYPos && bird.y - bird.radius_y < bottomYPos + this.h)
             {
                 state.current = state.gameOver;
                 HIT.play();
@@ -574,6 +577,21 @@ const pipes =
                     }
                 }, 500)                  
             }
+            //Top pipe if bird is out of canvas
+            if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
+               bird.y <= 0)
+            {
+                state.current = state.gameOver;
+                HIT.play();
+                setTimeout(function() 
+                {
+                    if (state.current == state.gameOver) 
+                    {
+                        DIE.currentTime = 0;
+                        DIE.play();
+                    }
+                }, 500)
+            }
 
             //Moving the pipes
             p.x -= this.dx;
@@ -585,7 +603,7 @@ const pipes =
             }
             
             //Update score when the bird passes a pipe
-            if (p.x + this.w < bird.x && !p.scored) 
+            if (p.x + this.w < bird.x - bird.radius_x && !p.scored) 
             {
                 score.game_score++;
                 POINT.play();
@@ -1190,7 +1208,8 @@ function canvasScale()
     bird.h = cvs.height * 0.059;
     bird.gravity = cvs.height * 0.0006;
     bird.jump = cvs.height * 0.01;
-    bird.radius = cvs.height * 0.027;
+    bird.radius_x = cvs.width * 0.052;
+    bird.radius_y = cvs.height * 0.026;
 
     //PIPES
     for(let i = 0; i < pipes.position.length; i++)
