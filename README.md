@@ -20,6 +20,7 @@ Medals are awarded based on the player's final score. Scores between 10 and 20 e
 The game physics rely on a 2D cartesian coordinate mapping system that correlates directly with pixel vectors relative to the canvas origin. Each object has an instance variable of x,y position coordinates that can be directly associated with a pixel vector in relation to the canvas origin. 
 
 It is important to mention that since the canvas origin is in the upper left corner, the ```y``` coordinate value increases from top to bottom on the canvas.
+
 ### Main functions
 - ```draw()``` - It's responsible for drawing the game objects on the canvas. It's a method present in all objects in the game, which draws the element of the respective object using its properties.
 
@@ -28,6 +29,7 @@ It is important to mention that since the canvas origin is in the upper left cor
 - ```loop()``` - This function is used to run the game loop. It runs every 1/75th of a second so that regardless of each player's computer update rate, the game has a fixed update rate of 75FPS. It calls ```update()``` and ```draw()```, thus updating the game state and rendering graphics, respectively. Frames are only incremented if the game isn't paused. This function also calls ```requesteAnimationFrame(loop)``` to continue the loop on the next frame.
 
 - ```canvasScale()``` - It's responsible for adjusting the canvas size according to the browser's window size, using the ```clientWidth``` and ```clientHeight``` properties of the document object. In addition, it also sets the canvas scale so that the graphic elements are drawn with the same proportion in different resolutions. This function is called when the window is loaded or resized.
+
 ### Collisions
 Explicit hitboxes weren't used to detect collisions. Instead, it was checked if the ```x``` and ```y``` coordinates of the bird were overlappinping the pipes or foreground x and y coordinates.
 
@@ -38,7 +40,7 @@ The bird's collision with the pipes or foreground is performed every frame. If t
 - **Home** - Game's initial state, where the player can start the game.
 - **Get Ready** - Where the player is about to start the game.
 - **Game** - Game's main state, where the player flies with the bird. In this state the player must avoid colliding with a set of pipes or with the foreground and try to get the best score.
-- **Game Over** - The game is over because the player collided with a pipe or with the ground. In this state the player's score and best score are shown with the option to restart the game or to return to Home state.
+- **Game Over** - The game is over because the player collided with a pipe or with the foreground. In this state the player's score and best score are shown with the option to restart the game or to return to Home state.
 <p align="center">
   <img alt="Game States" src="img/game_states.png" />
 </p>
@@ -50,7 +52,7 @@ All buttons in the game can be clicked with the mouse.
 #### Keyboard
 During the game state, you can use the following keyboard controls:
 - ```space``` - Make the bird flap
-- ```p``` - Pause the game
+- ```p``` - Pause/Resume the game
 
 
 ## Acknowledgements
