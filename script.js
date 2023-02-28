@@ -1,20 +1,21 @@
-//SELECT CANVAS
+// SELECT CANVAS
 const cvs = document.getElementById("canvas");
 const ctx = cvs.getContext("2d");
 
-//GAME VARIABLES AND CONSTANTS
+// GAME VARIABLES AND CONSTANTS
 let frames = 0;
 let birdFlapped = false;
 let gamePaused = false;
 let pPressed = false;
 let mouseDown = false;
+let mute = false;
 const DEGREE = Math.PI/180;
 
-//LOAD SPRITE SHEET
+// LOAD SPRITE SHEET
 const sprite_sheet = new Image();
 sprite_sheet.src = "img/sprite_sheet.png"
 
-//LOAD SOUNDS
+// LOAD unmuteS
 const DIE = new Audio();
 DIE.src = "audio/die.wav";
 
@@ -30,7 +31,7 @@ POINT.src = "audio/point.wav";
 const SWOOSH = new Audio();
 SWOOSH.src = "audio/swooshing.wav";
 
-//GAME STATES
+// GAME STATES
 const state = 
 {
     current  : 0,
@@ -40,8 +41,8 @@ const state =
     gameOver : 3
 }
 
-//CONTROL THE GAME
-//Control when the player clicks
+// CONTROL THE GAME
+// Control when the player clicks
 cvs.addEventListener("click", function(event) 
 { 
     let rect = cvs.getBoundingClientRect();
@@ -55,13 +56,29 @@ cvs.addEventListener("click", function(event)
                clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
             {
                 state.current = state.getReady;
-                SWOOSH.currentTime = 0;
-                SWOOSH.play();
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
             }
+            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                mute = mute ? false : true;
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
+            }          
             break;
         case state.getReady:
             bird.flap();
-            FLAP.play();
+            if(!mute)
+            {
+                FLAP.play();
+            }
             birdFlapped = true;            
             state.current = state.game;
             break;
@@ -74,8 +91,11 @@ cvs.addEventListener("click", function(event)
             else if(!gamePaused)
             {
                 bird.flap();
-                FLAP.currentTime = 0;
-                FLAP.play();
+                if(!mute)
+                {
+                    FLAP.currentTime = 0;
+                    FLAP.play();
+                }
             }
             break;
         case state.gameOver:
@@ -87,8 +107,11 @@ cvs.addEventListener("click", function(event)
                 score.scoreReset();
                 gameOver.restart_button.isPressed = false;
                 state.current = state.getReady;
-                SWOOSH.currentTime = 0;
-                SWOOSH.play();
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
             }
             else if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
                     clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
@@ -98,14 +121,17 @@ cvs.addEventListener("click", function(event)
                 score.scoreReset();
                 gameOver.home_button.isPressed = false;
                 state.current = state.home;
-                SWOOSH.currentTime = 0;
-                SWOOSH.play();
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
             }
             break;
     }        
 });
 
-//Control when the player presses a key
+// Control when the player presses a key
 document.addEventListener("keydown", function(event) 
 { 
     if (event.key === " ") 
@@ -114,7 +140,10 @@ document.addEventListener("keydown", function(event)
         {
             case state.getReady:                
                 bird.flap();
-                FLAP.play();
+                if(!mute)
+                {
+                    FLAP.play();
+                }
                 birdFlapped = true;
                 state.current = state.game;
                 break;
@@ -122,8 +151,11 @@ document.addEventListener("keydown", function(event)
                 if (!birdFlapped && !gamePaused) 
                 {
                     bird.flap();
-                    FLAP.currentTime = 0;
-                    FLAP.play();
+                    if(!mute)
+                    {
+                        FLAP.currentTime = 0;
+                        FLAP.play();
+                    }
                     birdFlapped = true;
                 }
                 break;
@@ -139,7 +171,7 @@ document.addEventListener("keydown", function(event)
     }          
 });
 
-//Control when the player stops pressing a key
+// Control when the player stops pressing a key
 document.addEventListener("keyup", function(event) 
 { 
     if (event.key === " " && state.current == state.game)
@@ -152,7 +184,7 @@ document.addEventListener("keyup", function(event)
     }  
 });
 
-//Control when the player clicks the left mouse button
+// Control when the player clicks the left mouse button
 cvs.addEventListener("mousedown", function(event) 
 {
     let rect = cvs.getBoundingClientRect();
@@ -163,37 +195,44 @@ cvs.addEventListener("mousedown", function(event)
     {
         case state.home: 
             mouseDown = true;
-            //Start button
+            // Start button
             if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
                clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
             {
-                //If player is clicking on Start Button
+                // If player is clicking on Start Button
                 home.start_button.isPressed = true;
             }
+            // Mute or Unmute button
+            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If player is clicking on Mute or Unmute Button
+                gameButtons.isPressed = true;
+            }  
             break;
         case state.gameOver:
             mouseDown = true;
-            //Restart button
+            // Restart button
             if(mouseDown &&
                clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
                clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
             {
-                //If player is clicking on Restart Button
+                // If player is clicking on Restart Button
                 gameOver.restart_button.isPressed = true;
             }
-            //Home button
+            // Home button
             else if(mouseDown &&
                     clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
                     clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
             {
-                //If player is clicking on Home Button
+                // If player is clicking on Home Button
                 gameOver.home_button.isPressed = true;
             }
             break;
     }
 });
 
-//Control when the player stops clicking the left mouse button
+// Control when the player stops clicking the left mouse button
 cvs.addEventListener("mouseup", function(event) 
 {
     let rect = cvs.getBoundingClientRect();
@@ -204,37 +243,44 @@ cvs.addEventListener("mouseup", function(event)
     {
         case state.home: 
             mouseDown = false;
-            //Start button
+            // Start button
             if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
                clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
             {
-                //If player stops clicking on Home button
+                // If player stops clicking on Home button
                 home.start_button.isPressed = false;
             }
+            // Mute or Unmute button
+            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If player is clicking on Mute or Unmute Button
+                gameButtons.isPressed = false;
+            }  
             break;
         case state.gameOver:
             mouseDown = false;
-            //Restart button
+            // Restart button
             if(mouseDown &&
                clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
                clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
             {
-                //If player stops clicking on Restart button
+                // If player stops clicking on Restart button
                 gameOver.restart_button.isPressed = false;
             }
-            //Home button
+            // Home button
             else if(mouseDown &&
                     clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
                     clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
             {
-                //If player stops clicking on Home button
+                // If player stops clicking on Home button
                 gameOver.home_button.isPressed = false;
             }
             break;
     }
 });
 
-//Control when the player moves the mouse away from the buttons
+// Control when the player moves the mouse away from the buttons
 cvs.addEventListener("mousemove", function(event) 
 {
     let rect = cvs.getBoundingClientRect();
@@ -244,29 +290,41 @@ cvs.addEventListener("mousemove", function(event)
     switch (state.current) 
     {
         case state.home:
-            //Start button
             if(mouseDown)
             {
+                // Start button
                 if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
                    clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
                 {
-                    //If player is clicking and goes to Start Button
+                    // If player is clicking and goes to Start Button
                     home.start_button.isPressed = true;
                 }
                 else
                 {
                     home.start_button.isPressed = false;
                 }
+                // Mute or Unmute button
+                if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                    clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+                {
+                    // If player is clicking and goes to Mute or Unmute Button
+                    gameButtons.isPressed = true;
+                }  
+                else
+                {
+                    gameButtons.isPressed = false;
+
+                }
             }
             break;
         case state.gameOver:
-            //Restart button
+            // Restart button
             if(mouseDown)
             {
                 if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
                    clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
                 {
-                    //If player is clicking and goes to Restart Button
+                    // If player is clicking and goes to Restart Button
                     gameOver.restart_button.isPressed = true;
                 }
                 else
@@ -274,13 +332,13 @@ cvs.addEventListener("mousemove", function(event)
                     gameOver.restart_button.isPressed = false;
                 }
             }
-            //Home button
+            // Home button
             if(mouseDown)
             {
                 if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
                 {
-                    //If player is clicking and goes to Home Button
+                    // If player is clicking and goes to Home Button
                     gameOver.home_button.isPressed = true;
                 }
                 else
@@ -292,7 +350,7 @@ cvs.addEventListener("mousemove", function(event)
     }
 });
 
-//BACKGROUND
+// BACKGROUND
 const background = 
 {
     spriteX : 0,
@@ -316,7 +374,7 @@ const background =
     }
 }
 
-//FOREGROUND
+// FOREGROUND
 const foreground = 
 {
     spriteX : 553,
@@ -332,7 +390,7 @@ const foreground =
 
     draw : function() 
     {
-        //Drawing 2 foregroung images because the sprite's width is lower than canvas width
+        // Drawing 2 foregroung images because the sprite's width is lower than canvas width
         ctx.drawImage(
                         sprite_sheet, 
                         this.spriteX, this.spriteY, 
@@ -353,13 +411,13 @@ const foreground =
     {
         if(state.current != state.gameOver) 
         {
-            //Keeps decrementing x by dx until the foreground be moved by its width / 2
+            // Keeps decrementing x by dx until the foreground be moved by its width / 2
             this.x = (this.x - this.dx) % (this.w/2);
         }
     }
 }
 
-//BIRD
+// BIRD
 const bird = 
 {
     animation : 
@@ -385,9 +443,9 @@ const bird =
     {
         let bird = this.animation[this.frame];
 
-        //Saving the state of the canvas so only the bird rotates
+        // Saving the state of the canvas so only the bird rotates
         ctx.save();
-        //Translation from the (0, 0) origin to the bird orgin so the centre of rotation is the centre of the bird
+        // Translation from the (0, 0) origin to the bird orgin so the centre of rotation is the centre of the bird
         ctx.translate(this.x, this.y)
         ctx.rotate(this.rotation);
 
@@ -397,12 +455,12 @@ const bird =
                             sprite_sheet, 
                             bird.spriteX, bird.spriteY, 
                             bird.spriteW, bird.spriteH, 
-                            -this.w/2, -this.h/2, //Centering the bird
+                            -this.w/2, -this.h/2, // Centering the bird
                             this.w, this.h
                          );
         }
 
-        //Restore state after rotation
+        // Restore state after rotation
         ctx.restore();
     },
 
@@ -413,16 +471,16 @@ const bird =
 
     update: function() 
     {
-        //The bird must flap slowly on get ready state
+        // The bird must flap slowly on get ready state
         this.period = (state.current == state.getReady) ? 6 : 4;
-        //Incrementing the frame by 1, each period
+        // Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
-        //Frame goes from 0 to 3, then again to 0
+        // Frame goes from 0 to 3, then again to 0
         this.frame = this.frame % this.animation.length; 
 
         if(state.current == state.getReady)
         {
-            //Reset bird's position after game over
+            // Reset bird's position after game over
             this.y = cvs.height * 0.395;
             this.rotation = 0 * DEGREE;
         } 
@@ -433,25 +491,28 @@ const bird =
 
             if(this.y + this.h/2 >= foreground.y)
             {
-                //Bird position when it collides with the foreground
+                // Bird position when it collides with the foreground
                 this.y = foreground.y - this.h/2;
                 if(state.current == state.game)
                 {
                     state.current = state.gameOver;
-                    HIT.play();
-                    setTimeout(function()
+                    if(!mute)
                     {
-                        SWOOSH.currentTime = 0;
-                        SWOOSH.play();
-                    }, 500)
+                        HIT.play();
+                        setTimeout(function()
+                        {
+                            SWOOSH.currentTime = 0;
+                            SWOOSH.play();
+                        }, 500)
+                    }
                 }
             }
 
-            //If the speed is greater than the jump, means the bird is falling down
+            // If the speed is greater than the jump, means the bird is falling down
             if(this.speed >= this.jump)
             {
                 this.rotation = 90 * DEGREE;
-                //When bird dies, stop flapping animation
+                // When bird dies, stop flapping animation
                 this.frame = 0;
             }
             else
@@ -467,7 +528,7 @@ const bird =
     }
 }
 
-//PIPES
+// PIPES
 const pipes =
 {
     position : [],
@@ -524,13 +585,13 @@ const pipes =
 
     update : function()
     {
-        //Only create pipes in the game state
+        // Only create pipes in the game state
         if(state.current != state.game) 
         {
             return;
         }
 
-        //Every 80 frames add a new position to our position array
+        // Every 80 frames add a new position to our position array
         if(frames%80 == 0) 
         {
             this.position.push(
@@ -546,67 +607,79 @@ const pipes =
             let p = this.position[i];
             let bottomYPos = p.y + this.h + this.gap;
 
-            //COLLISION DETECTION
-            //Top pipe
+            // COLLISION DETECTION
+            // Top pipe
             if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
                bird.y + bird.radius_y > p.y && bird.y - bird.radius_y < p.y + this.h)
             {
                 state.current = state.gameOver;
-                HIT.play();
-                setTimeout(function() 
+                if(!mute)
                 {
-                    if (state.current == state.gameOver) 
+                    HIT.play();
+                    setTimeout(function() 
                     {
-                        DIE.currentTime = 0;
-                        DIE.play();
-                    }
-                }, 500)
+                        if (state.current == state.gameOver) 
+                        {
+                            DIE.currentTime = 0;
+                            DIE.play();
+                        }
+                    }, 500)
+                }
             }
-            //Bottom pipe
+            // Bottom pipe
             if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
                bird.y + bird.radius_y > bottomYPos && bird.y - bird.radius_y < bottomYPos + this.h)
             {
                 state.current = state.gameOver;
-                HIT.play();
-                setTimeout(function() 
+                if(!mute)
                 {
-                    if (state.current == state.gameOver) 
+                    HIT.play();
+                    setTimeout(function() 
                     {
-                        DIE.currentTime = 0;
-                        DIE.play();
-                    }
-                }, 500)                  
+                        if (state.current == state.gameOver) 
+                        {
+                            DIE.currentTime = 0;
+                            DIE.play();
+                        }
+                    }, 500)   
+                }               
             }
-            //Top pipe if bird is out of canvas
+            // Top pipe if bird is out of canvas
             if(bird.x + bird.radius_x > p.x && bird.x - bird.radius_x < p.x + this.w &&
                bird.y <= 0)
             {
                 state.current = state.gameOver;
-                HIT.play();
-                setTimeout(function() 
+                if(!mute)
                 {
-                    if (state.current == state.gameOver) 
+                    HIT.play();
+                    setTimeout(function() 
                     {
-                        DIE.currentTime = 0;
-                        DIE.play();
-                    }
-                }, 500)
+                        if (state.current == state.gameOver) 
+                        {
+                            DIE.currentTime = 0;
+                            DIE.play();
+                        }
+                    }, 500)   
+                }   
             }
 
-            //Moving the pipes
+            // Moving the pipes
             p.x -= this.dx;
 
-            //Deleting 1/3 of the pipes every 6 pipes
+            // Deleting 1/3 of the pipes every 6 pipes
             if (this.position.length == 6) 
             {
                 this.position.splice(0, 2);
             }
             
-            //Update score when the bird passes a pipe
+            // Update score when the bird passes a pipe
             if (p.x + this.w < bird.x - bird.radius_x && !p.scored) 
             {
                 score.game_score++;
-                POINT.play();
+                if(!mute)
+                {
+                    POINT.play();
+                }
                 
                 if(score.game_score > score.best_score)
                 {
@@ -626,7 +699,7 @@ const pipes =
     }
 }
 
-//HOME
+// HOME
 const home = 
 {
     logo : 
@@ -735,14 +808,14 @@ const home =
         }
 
         this.period = 6;
-        //Incrementing the frame by 1, each period
+        // Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
-        //Frame goes from 0 to 3, then again to 0
+        // Frame goes from 0 to 3, then again to 0
         this.frame = this.frame % this.animation.length; 
     }
 }
 
-//GET READY MESSAGE
+// GET READY MESSAGE
 const getReady = 
 {
     get_ready : 
@@ -783,28 +856,68 @@ const getReady =
     }
 }
 
-//PAUSE/RESUME BUTTONS
+// PAUSE/RESUME BUTTONS
 const gameButtons = 
 {
     pause_button : 
     {
         spriteX: 280, spriteY: 114, 
         spriteW: 52, spriteH: 56,
-        x: 0, y: 0, 
-        w: 0, h: 0
     },
 
     resume_button : 
     {
         spriteX: 227, spriteY: 114, 
         spriteW: 52, spriteH: 56,
-        x: 0, y: 0, 
-        w: 0, h: 0
     },
+
+    unmute_button : 
+    {
+        spriteX: 171, spriteY: 0, 
+        spriteW: 55, spriteH: 62,
+    },
+
+    mute_button : 
+    {
+        spriteX: 171, spriteY: 63, 
+        spriteW: 55, spriteH: 62,
+    },
+
+    x: 0, 
+    y: 0, 
+    w: 0, 
+    h: 0,
+    y_pressed : 0,
+    isPressed : false,
 
     draw : function() 
     {
-        if(state.current == state.game)
+        let button_y = this.isPressed ? this.y_pressed : this.y;
+
+        if(state.current == state.home)
+        {
+            if(!mute)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.unmute_button.spriteX, this.unmute_button.spriteY, 
+                                this.unmute_button.spriteW, this.unmute_button.spriteH, 
+                                this.x, button_y, 
+                                this.w, this.h
+                             );
+            }
+            else if(mute)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.mute_button.spriteX, this.mute_button.spriteY, 
+                                this.mute_button.spriteW, this.mute_button.spriteH, 
+                                this.x, button_y, 
+                                this.w, this.h
+                             ); 
+            }
+        }
+        else if(state.current == state.game)
         {
             if(!gamePaused)
             {
@@ -830,7 +943,7 @@ const gameButtons =
     }
 }
 
-//GAME OVER
+// GAME OVER
 const gameOver = 
 {
     game_over : 
@@ -908,7 +1021,7 @@ const gameOver =
     }
 }
 
-//SCORE
+// SCORE
 const score = 
 {
     new_best :
@@ -921,16 +1034,16 @@ const score =
 
     number : 
     [
-        {spriteX :  98}, //0
-        {spriteX : 127}, //1
-        {spriteX : 156}, //2
-        {spriteX : 185}, //3
-        {spriteX : 214}, //4
-        {spriteX : 243}, //5
-        {spriteX : 272}, //6 
-        {spriteX : 301}, //7
-        {spriteX : 330}, //8
-        {spriteX : 359}  //9
+        {spriteX :  98}, // 0
+        {spriteX : 127}, // 1
+        {spriteX : 156}, // 2
+        {spriteX : 185}, // 3
+        {spriteX : 214}, // 4
+        {spriteX : 243}, // 5
+        {spriteX : 272}, // 6 
+        {spriteX : 301}, // 7
+        {spriteX : 330}, // 8
+        {spriteX : 359}  // 9
     ],
     spriteY : 243, 
     spriteW : 28, 
@@ -944,7 +1057,7 @@ const score =
     score : {x: 0, y: 0, w: 0, h: 0},
     best  : {x: 0, y: 0, w: 0, h: 0},
 
-    //If local storage is empty for best_score, best_score is 0
+    // If local storage is empty for best_score, best_score is 0
     best_score : parseInt(localStorage.getItem("best_score")) || 0,
     game_score : 0,
     new_best_score : false,
@@ -968,15 +1081,15 @@ const score =
                     total_width += this.w + this.space;
                 }
             }
-            //Subtracts the extra space at the end
+            // Subtracts the extra space at the end
             total_width -= this.space;
 
-            //Offset for the game score to center it horizontally
+            // Offset for the game score to center it horizontally
             let offset = this.x - total_width / 2 + (this.w / 2);
             
             for(let i = 0; i < game_score_s.length; i++)
             {
-                //If i isn't last digit and next digit is 1, use one_width for current digit to create space between digits
+                // If i isn't last digit and next digit is 1, use one_width for current digit to create space between digits
                 if (i < game_score_s.length - 1 && game_score_s[i+1] == 1) 
                 {
                     ctx.drawImage(
@@ -988,7 +1101,7 @@ const score =
                                  );
                     offset = offset + this.one_w + this.space;
                 } 
-                //If i is last digit or next digit isn't 1, use full width for current digit
+                // If i is last digit or next digit isn't 1, use full width for current digit
                 else 
                 {
                     ctx.drawImage(
@@ -1005,7 +1118,7 @@ const score =
         else if(state.current == state.gameOver)
         {
             let offset_1 = 0;
-            //Game score on Game Over screen
+            // Game score on Game Over screen
             for(let i = game_score_s.length - 1; i >= 0; i--)
             {
                 ctx.drawImage(
@@ -1026,7 +1139,7 @@ const score =
             }
 
             let offset_2 = 0;
-            //Best score on Game Over screen
+            // Best score on Game Over screen
             for(let i = best_score_s.length - 1; i >= 0; i--)
             {     
                 ctx.drawImage(
@@ -1066,10 +1179,10 @@ const score =
     }
 }
 
-//SCORE MEDALS
+// SCORE MEDALS
 const medal = 
 {
-    //Medal's variables
+    // Medal's variables
     bronze   : {spriteX: 554},
     silver   : {spriteX: 642},
     gold     : {spriteX: 731},
@@ -1084,7 +1197,7 @@ const medal =
 
     medal: "",
 
-    //Shine animation's variables
+    // Shine animation's variables
     animation : 
     [
         {spriteX: 922, spriteY: 386, spriteW: 20, spriteH: 20},
@@ -1152,24 +1265,24 @@ const medal =
     
     update: function() 
     {
-        //How often the shine effect should be updated, in frames
+        // How often the shine effect should be updated, in frames
         this.period = 7;
-        //Incrementing the frame by 1, each period
+        // Incrementing the frame by 1, each period
         this.frame += frames % this.period == 0 ? 1 : 0;
-        //Frame goes from 0 to 5, then again to 0
+        // Frame goes from 0 to 5, then again to 0
         this.frame = this.frame % this.animation.length; 
 
-        //Resetting shine_position array after last frame so only 1 animation is drawn at a time
+        // Resetting shine_position array after last frame so only 1 animation is drawn at a time
         if (this.frame == this.animation.length - 1)
             this.shine_position = [];
 
         if (frames % (this.period * this.animation.length) == 0) 
         {
-            //How far from the circle's center the shine animation can appear
+            // How far from the circle's center the shine animation can appear
             const limit = 0.9 * this.radius;
-            //Direction the shine animation will appear in
+            // Direction the shine animation will appear in
             const angle = Math.random() * Math.PI * 2;
-            //How far from the center the shine animation will appear 
+            // How far from the center the shine animation will appear 
             const distance = Math.random() * limit;
     
             this.shine_position.push(
@@ -1181,27 +1294,27 @@ const medal =
     }
 }
 
-//CANVAS SCALE
+// CANVAS SCALE
 function canvasScale() 
 {
-    //CANVAS HEIGHT & WIDTH
+    // CANVAS HEIGHT & WIDTH
     cvs.height = window.innerHeight - 2;
     cvs.width  = cvs.height * 0.72 - 2;
 
-    //BACKGROUND
+    // BACKGROUND
     background.x = 0;
     background.y = cvs.height * 0.631;
     background.w = cvs.width;
     background.h = background.w * 0.74;
 
-    //FOREGROUND
+    // FOREGROUND
     foreground.x = 0;
     foreground.y = cvs.height * 0.861;
     foreground.w = cvs.width * 0.7;
     foreground.h = foreground.w * 0.46;
     foreground.dx = cvs.width * 0.007;
 
-    //BIRD
+    // BIRD
     bird.x = cvs.width * 0.290;
     bird.y = cvs.height * 0.395;
     bird.w = cvs.width * 0.117;
@@ -1211,7 +1324,7 @@ function canvasScale()
     bird.radius_x = cvs.width * 0.052;
     bird.radius_y = cvs.height * 0.026;
 
-    //PIPES
+    // PIPES
     for(let i = 0; i < pipes.position.length; i++)
     {
         let w = pipes.w / 0.164;
@@ -1230,8 +1343,8 @@ function canvasScale()
     pipes.maxYPos = -(cvs.height * 0.350);
     pipes.dx = cvs.width * 0.007;
 
-    //HOME
-    //Logo
+    // HOME
+    // Logo
     home.logo.x = cvs.width * 0.098;
     home.logo.y = cvs.height * 0.279;
     home.logo.w = cvs.width * 0.665;
@@ -1239,95 +1352,96 @@ function canvasScale()
     home.logo.MAXY = cvs.height * 0.279 - home.logo.h/7;
     home.logo.MINY = cvs.height * 0.279 + home.logo.h/7;
     home.logo.dy = cvs.width * 0.0012;
-    //Bird
+    // Bird
     home.bird.x = cvs.width * 0.803;
     home.bird.y = cvs.height * 0.294;
     home.bird.w = cvs.width * 0.117;
     home.bird.h = cvs.height * 0.059;
-    //Start Button
+    // Start Button
     home.start_button.x = cvs.width * 0.359;
     home.start_button.y = cvs.height * 0.759;
     home.start_button.y_pressed = cvs.height * 0.763;
     home.start_button.w = cvs.width * 0.276;
     home.start_button.h = cvs.height * 0.068;
-    //Studio Name
+    // Studio Name
     home.studio_name.x = cvs.width * 0.171;
     home.studio_name.y = cvs.height * 0.897;
     home.studio_name.w = cvs.width * 0.659;
     home.studio_name.h = cvs.height * 0.034; 
 
-    //GET READY
-    //"Get Ready" message
+    // GET READY
+    // "Get Ready" message
     getReady.get_ready.x = cvs.width * 0.197;
     getReady.get_ready.y = cvs.height * 0.206;
     getReady.get_ready.w = cvs.width * 0.602;
     getReady.get_ready.h = cvs.height * 0.109;  
-    //Tap
+    // Tap
     getReady.tap.x = cvs.width * 0.433;
     getReady.tap.y = cvs.height * 0.435;
     getReady.tap.w = cvs.width * 0.270;
     getReady.tap.h = cvs.height * 0.244;
 
-    //PAUSE & RESUME BUTTONS
-    //Pause button 
+    // GAME BUTTONS
+    // Pause, Resume, Mute and Unmute buttons
     gameButtons.x = cvs.width * 0.087;
     gameButtons.y = cvs.height * 0.045;
+    gameButtons.y_pressed = cvs.height * 0.049;
     gameButtons.w = cvs.width * 0.088;
-    gameButtons.h = cvs.height * 0.069;  
+    gameButtons.h = cvs.height * 0.069; 
 
-    //GAME OVER
-    //"Game Over" message
+    // GAME OVER
+    // "Game Over" message
     gameOver.game_over.x = cvs.width * 0.182;
     gameOver.game_over.y = cvs.height * 0.243;
     gameOver.game_over.w = cvs.width * 0.645;
     gameOver.game_over.h = cvs.height * 0.095; 
-    //Scoreboard
+    // Scoreboard
     gameOver.scoreboard.x = cvs.width * 0.107;
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
-    //Restart button
+    // Restart button
     gameOver.restart_button.x = cvs.width * 0.147;
     gameOver.restart_button.y = cvs.height * 0.759;
     gameOver.restart_button.y_pressed = cvs.height * 0.763;
     gameOver.restart_button.w = cvs.width * 0.276;
     gameOver.restart_button.h = cvs.height * 0.068;
-    //Home button
+    // Home button
     gameOver.home_button.x = cvs.width * 0.576;
     gameOver.home_button.y = cvs.height * 0.759;
     gameOver.home_button.y_pressed = cvs.height * 0.763;
     gameOver.home_button.w = cvs.width * 0.276;
     gameOver.home_button.h = cvs.height * 0.068;
 
-    //SCORE
-    //New best score label
+    // SCORE
+    // New best score label
     score.new_best.x = cvs.width * 0.577;
     score.new_best.y = cvs.height * 0.500;
     score.new_best.w = cvs.width * 0.112;
     score.new_best.h = cvs.height * 0.035;
-    //Width & height for every number
+    // Width & height for every number
     score.w = cvs.width * 0.048;
     score.h = cvs.height * 0.046;
     score.one_w = cvs.width * 0.032
-    //Score on game screen
+    // Score on game screen
     score.x = cvs.width * 0.476;
     score.y = cvs.height * 0.045;
-    //Score on game over screen
+    // Score on game over screen
     score.score.x = cvs.width * 0.769;
     score.score.y = cvs.height * 0.441;
-    //Best score on game screen
+    // Best score on game screen
     score.best.x = cvs.width * 0.769;
     score.best.y = cvs.height * 0.545;
-    //Space between numbers
+    // Space between numbers
     score.space = cvs.width * 0.016;
 
-    //SCORE MEDALS
-    //Medals
+    // SCORE MEDALS
+    // Medals
     medal.x = cvs.width * 0.197;
     medal.y = cvs.height * 0.461;
     medal.w = cvs.width * 0.152;
     medal.h = cvs.height * 0.108;
-    //Shine Animation
+    // Shine Animation
     for(let i = 0; i < medal.shine_position.length; i++)
     {
         let w = medal.animation_w / 0.034;
@@ -1347,16 +1461,16 @@ function canvasScale()
     medal.animation_h = cvs.height * 0.023;
 }
 
-//When window loads or resizes
+// When window loads or resizes
 window.addEventListener("load", () => {
     canvasScale();
     window.addEventListener("resize", canvasScale);
 });
 
-//DRAW
+// DRAW
 function draw() 
 {
-    //Background color of canvas 
+    // Background color of canvas 
     ctx.fillStyle = "#7BC5CD"; 
     ctx.fillRect(0, 0, cvs.width, cvs.height); 
 
@@ -1372,10 +1486,10 @@ function draw()
     score.draw();
 }
 
-//UPDATE
+// UPDATE
 function update() 
 {
-    //Update position and state of bird, foreground and pipes only if game isn't paused
+    // Update position and state of bird, foreground and pipes only if game isn't paused
     if(!gamePaused)
     {
         bird.update();
@@ -1386,15 +1500,15 @@ function update()
     medal.update();
 }
 
-//LOOP
+// LOOP
 function loop() 
 {
-    //Update rate: 75FPS
+    // Update rate: 75FPS
     setTimeout(function() 
     {
         update();
         draw();
-        //Increment frames only if game isn't paused
+        // Increment frames only if game isn't paused
         if(!gamePaused)
         {
             frames++;
