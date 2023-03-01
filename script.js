@@ -52,8 +52,20 @@ cvs.addEventListener("click", function(event)
     switch (state.current) 
     {
         case state.home:
-            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
-               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
+            // Mute or Unmute button
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                mute = !mute;
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
+            } 
+            // Start button
+            else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
+                    clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
             {
                 state.current = state.getReady;
                 if(!mute)
@@ -61,17 +73,7 @@ cvs.addEventListener("click", function(event)
                     SWOOSH.currentTime = 0;
                     SWOOSH.play();
                 }
-            }
-            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
-                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
-            {
-                mute = mute ? false : true;
-                if(!mute)
-                {
-                    SWOOSH.currentTime = 0;
-                    SWOOSH.play();
-                }
-            }          
+            }         
             break;
         case state.getReady:
             bird.flap();
@@ -83,10 +85,11 @@ cvs.addEventListener("click", function(event)
             state.current = state.game;
             break;
         case state.game:
+            // Pause or Resume button
             if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
                 clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
             {
-                gamePaused = gamePaused ? false : true;
+                gamePaused = !gamePaused;
             }
             else if(!gamePaused)
             {
@@ -99,13 +102,14 @@ cvs.addEventListener("click", function(event)
             }
             break;
         case state.gameOver:
-            if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
-               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+            // Restart button
+            if(clickX >= gameButtons.restart_button.x && clickX <= gameButtons.restart_button.x + gameButtons.restart_button.w &&
+               clickY >= gameButtons.restart_button.y && clickY <= gameButtons.restart_button.y + gameButtons.restart_button.h)
             {
                 pipes.pipesReset();
                 bird.speedReset();
                 score.scoreReset();
-                gameOver.restart_button.isPressed = false;
+                gameButtons.restart_button.isPressed = false;
                 state.current = state.getReady;
                 if(!mute)
                 {
@@ -113,13 +117,14 @@ cvs.addEventListener("click", function(event)
                     SWOOSH.play();
                 }
             }
-            else if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
-                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+            // Home button
+            else if(clickX >= gameButtons.home_button.x && clickX <= gameButtons.home_button.x + gameButtons.home_button.w &&
+                    clickY >= gameButtons.home_button.y && clickY <= gameButtons.home_button.y + gameButtons.home_button.h)
             {
                 pipes.pipesReset();
                 bird.speedReset();
                 score.scoreReset();
-                gameOver.home_button.isPressed = false;
+                gameButtons.home_button.isPressed = false;
                 state.current = state.home;
                 if(!mute)
                 {
@@ -165,7 +170,7 @@ document.addEventListener("keydown", function(event)
     {
         if (state.current == state.game && !pPressed) 
         {
-            gamePaused = gamePaused ? false : true;
+            gamePaused = !gamePaused;
             pPressed = true;
         }
     }          
@@ -195,38 +200,38 @@ cvs.addEventListener("mousedown", function(event)
     {
         case state.home: 
             mouseDown = true;
-            // Start button
-            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
-               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
-            {
-                // If player is clicking on Start Button
-                home.start_button.isPressed = true;
-            }
             // Mute or Unmute button
-            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
-                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
             {
                 // If player is clicking on Mute or Unmute Button
                 gameButtons.isPressed = true;
-            }  
+            } 
+            // Start button
+            else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
+                    clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
+            {
+                // If player is clicking on Start Button
+                gameButtons.start_button.isPressed = true;
+            } 
             break;
         case state.gameOver:
             mouseDown = true;
             // Restart button
             if(mouseDown &&
-               clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
-               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+               clickX >= gameButtons.restart_button.x && clickX <= gameButtons.restart_button.x + gameButtons.restart_button.w &&
+               clickY >= gameButtons.restart_button.y && clickY <= gameButtons.restart_button.y + gameButtons.restart_button.h)
             {
                 // If player is clicking on Restart Button
-                gameOver.restart_button.isPressed = true;
+                gameButtons.restart_button.isPressed = true;
             }
             // Home button
             else if(mouseDown &&
-                    clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
-                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+                    clickX >= gameButtons.home_button.x && clickX <= gameButtons.home_button.x + gameButtons.home_button.w &&
+                    clickY >= gameButtons.home_button.y && clickY <= gameButtons.home_button.y + gameButtons.home_button.h)
             {
                 // If player is clicking on Home Button
-                gameOver.home_button.isPressed = true;
+                gameButtons.home_button.isPressed = true;
             }
             break;
     }
@@ -243,38 +248,38 @@ cvs.addEventListener("mouseup", function(event)
     {
         case state.home: 
             mouseDown = false;
-            // Start button
-            if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
-               clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
-            {
-                // If player stops clicking on Home button
-                home.start_button.isPressed = false;
-            }
             // Mute or Unmute button
-            else if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
-                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
             {
-                // If player is clicking on Mute or Unmute Button
+                // If player stops clicking on Mute or Unmute Button
                 gameButtons.isPressed = false;
             }  
+            // Start button
+            else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
+                    clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
+            {
+                // If player stops clicking on Home button
+                gameButtons.start_button.isPressed = false;
+            }
             break;
         case state.gameOver:
             mouseDown = false;
             // Restart button
             if(mouseDown &&
-               clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
-               clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+               clickX >= gameButtons.restart_button.x && clickX <= gameButtons.restart_button.x + gameButtons.restart_button.w &&
+               clickY >= gameButtons.restart_button.y && clickY <= gameButtons.restart_button.y + gameButtons.restart_button.h)
             {
                 // If player stops clicking on Restart button
-                gameOver.restart_button.isPressed = false;
+                gameButtons.restart_button.isPressed = false;
             }
             // Home button
             else if(mouseDown &&
-                    clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
-                    clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+                    clickX >= gameButtons.home_button.x && clickX <= gameButtons.home_button.x + gameButtons.home_button.w &&
+                    clickY >= gameButtons.home_button.y && clickY <= gameButtons.home_button.y + gameButtons.home_button.h)
             {
                 // If player stops clicking on Home button
-                gameOver.home_button.isPressed = false;
+                gameButtons.home_button.isPressed = false;
             }
             break;
     }
@@ -292,17 +297,6 @@ cvs.addEventListener("mousemove", function(event)
         case state.home:
             if(mouseDown)
             {
-                // Start button
-                if(clickX >= home.start_button.x && clickX <= home.start_button.x + home.start_button.w &&
-                   clickY >= home.start_button.y && clickY <= home.start_button.y + home.start_button.h)
-                {
-                    // If player is clicking and goes to Start Button
-                    home.start_button.isPressed = true;
-                }
-                else
-                {
-                    home.start_button.isPressed = false;
-                }
                 // Mute or Unmute button
                 if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
@@ -312,8 +306,21 @@ cvs.addEventListener("mousemove", function(event)
                 }  
                 else
                 {
+                    // If player is clicking and goes away from Mute or Unmute Button
                     gameButtons.isPressed = false;
 
+                }
+                // Start button
+                if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
+                   clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
+                {
+                    // If player is clicking and goes to Start Button
+                    gameButtons.start_button.isPressed = true;
+                }
+                else
+                {
+                    // If player is clicking and goes away from Start Button
+                    gameButtons.start_button.isPressed = false;
                 }
             }
             break;
@@ -321,29 +328,31 @@ cvs.addEventListener("mousemove", function(event)
             // Restart button
             if(mouseDown)
             {
-                if(clickX >= gameOver.restart_button.x && clickX <= gameOver.restart_button.x + gameOver.restart_button.w &&
-                   clickY >= gameOver.restart_button.y && clickY <= gameOver.restart_button.y + gameOver.restart_button.h)
+                if(clickX >= gameButtons.restart_button.x && clickX <= gameButtons.restart_button.x + gameButtons.restart_button.w &&
+                   clickY >= gameButtons.restart_button.y && clickY <= gameButtons.restart_button.y + gameButtons.restart_button.h)
                 {
                     // If player is clicking and goes to Restart Button
-                    gameOver.restart_button.isPressed = true;
+                    gameButtons.restart_button.isPressed = true;
                 }
                 else
                 {
-                    gameOver.restart_button.isPressed = false;
+                    // If player is clicking and goes away from Restart Button
+                    gameButtons.restart_button.isPressed = false;
                 }
             }
             // Home button
             if(mouseDown)
             {
-                if(clickX >= gameOver.home_button.x && clickX <= gameOver.home_button.x + gameOver.home_button.w &&
-                   clickY >= gameOver.home_button.y && clickY <= gameOver.home_button.y + gameOver.home_button.h)
+                if(clickX >= gameButtons.home_button.x && clickX <= gameButtons.home_button.x + gameButtons.home_button.w &&
+                   clickY >= gameButtons.home_button.y && clickY <= gameButtons.home_button.y + gameButtons.home_button.h)
                 {
                     // If player is clicking and goes to Home Button
-                    gameOver.home_button.isPressed = true;
+                    gameButtons.home_button.isPressed = true;
                 }
                 else
                 {
-                    gameOver.home_button.isPressed = false;
+                    // If player is clicking and goes away from Home Button
+                    gameButtons.home_button.isPressed = false;
                 }
             }
             break;
@@ -378,9 +387,9 @@ const background =
 const foreground = 
 {
     spriteX : 553,
-    spriteY : 577,
-    spriteW : 446,
-    spriteH : 223,
+    spriteY : 576,
+    spriteW : 447,
+    spriteH : 224,
     x : 0,
     y : 0,
     w : 0,
@@ -402,7 +411,7 @@ const foreground =
                         sprite_sheet, 
                         this.spriteX, this.spriteY, 
                         this.spriteW, this.spriteH, 
-                        (this.x + this.w), this.y, 
+                        (this.x + this.w)-0.7, this.y, 
                         this.w, this.h
                      );
     },
@@ -724,16 +733,6 @@ const home =
         w: 0, h: 0
     },
 
-    start_button : 
-    {
-        spriteX: 227, spriteY: 0, 
-        spriteW: 160, spriteH: 56,
-        x: 0, y: 0, 
-        w: 0, h: 0,
-        y_pressed : 0,
-        isPressed : false
-    },
-
     studio_name : 
     {
         spriteX: 172, spriteY: 284, 
@@ -748,7 +747,6 @@ const home =
     draw : function() 
     {
         let bird = this.animation[this.frame];
-        let button_y = this.start_button.isPressed ? this.start_button.y_pressed : this.start_button.y;
 
         if(state.current == state.home)
         {
@@ -765,13 +763,6 @@ const home =
                             bird.spriteW, bird.spriteH, 
                             this.bird.x, this.bird.y,
                             this.bird.w, this.bird.h
-                         );
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.start_button.spriteX, this.start_button.spriteY, 
-                            this.start_button.spriteW, this.start_button.spriteH, 
-                            this.start_button.x, button_y, 
-                            this.start_button.w, this.start_button.h
                          );
             ctx.drawImage(
                             sprite_sheet, 
@@ -856,9 +847,31 @@ const getReady =
     }
 }
 
-// PAUSE/RESUME BUTTONS
+// GAME BUTTONS
 const gameButtons = 
 {
+    mute_button : 
+    {
+        spriteX: 171, spriteY: 63, 
+        spriteW: 55, spriteH: 62,
+    },
+
+    unmute_button : 
+    {
+        spriteX: 171, spriteY: 0, 
+        spriteW: 55, spriteH: 62,
+    },
+
+    start_button : 
+    {
+        spriteX: 227, spriteY: 0, 
+        spriteW: 160, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
+    },
+
     pause_button : 
     {
         spriteX: 280, spriteY: 114, 
@@ -871,18 +884,27 @@ const gameButtons =
         spriteW: 52, spriteH: 56,
     },
 
-    unmute_button : 
+    home_button : 
     {
-        spriteX: 171, spriteY: 0, 
-        spriteW: 55, spriteH: 62,
+        spriteX: 388, spriteY: 171, 
+        spriteW: 160, spriteH: 59,
+        x: 0, y: 0, 
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
     },
 
-    mute_button : 
+    restart_button : 
     {
-        spriteX: 171, spriteY: 63, 
-        spriteW: 55, spriteH: 62,
+        spriteX: 227, spriteY: 57, 
+        spriteW: 160, spriteH: 56,
+        x: 0, y: 0, 
+        w: 0, h: 0,
+        y_pressed : 0,
+        isPressed : false
     },
 
+    // Variables common to Pause, Resume, Mute and Unmute buttons as they have the same dimensions and positions
     x: 0, 
     y: 0, 
     w: 0, 
@@ -892,7 +914,14 @@ const gameButtons =
 
     draw : function() 
     {
+        // Pause, Resume, Mute or Unmute button
         let button_y = this.isPressed ? this.y_pressed : this.y;
+        // Start Button
+        let start_button_y = this.start_button.isPressed ? this.start_button.y_pressed : this.start_button.y;
+        // Restart button
+        let restart_button_y = this.restart_button.isPressed ? this.restart_button.y_pressed : this.restart_button.y;
+        // Home button
+        let home_button_y = this.home_button.isPressed ? this.home_button.y_pressed : this.home_button.y;
 
         if(state.current == state.home)
         {
@@ -915,7 +944,14 @@ const gameButtons =
                                 this.x, button_y, 
                                 this.w, this.h
                              ); 
-            }
+            }            
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.start_button.spriteX, this.start_button.spriteY, 
+                            this.start_button.spriteW, this.start_button.spriteH, 
+                            this.start_button.x, start_button_y, 
+                            this.start_button.w, this.start_button.h
+                         );
         }
         else if(state.current == state.game)
         {
@@ -940,6 +976,23 @@ const gameButtons =
                              ); 
             }
         }
+        else if(state.current == state.gameOver)
+        {
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.restart_button.spriteX, this.restart_button.spriteY, 
+                            this.restart_button.spriteW, this.restart_button.spriteH, 
+                            this.restart_button.x, restart_button_y, 
+                            this.restart_button.w, this.restart_button.h
+                         );
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.home_button.spriteX, this.home_button.spriteY, 
+                            this.home_button.spriteW, this.home_button.spriteH, 
+                            this.home_button.x, home_button_y, 
+                            this.home_button.w, this.home_button.h
+                         );
+        }
     }
 }
 
@@ -962,32 +1015,10 @@ const gameOver =
         w: 0, h: 0
     },
 
-    home_button : 
-    {
-        spriteX: 388, spriteY: 171, 
-        spriteW: 160, spriteH: 59,
-        x: 0, y: 0, 
-        w: 0, h: 0,
-        y_pressed : 0,
-        isPressed : false
-    },
-
-    restart_button : 
-    {
-        spriteX: 227, spriteY: 57, 
-        spriteW: 160, spriteH: 56,
-        x: 0, y: 0, 
-        w: 0, h: 0,
-        y_pressed : 0,
-        isPressed : false
-    },
-
     draw : function() 
     {
         if(state.current == state.gameOver)
         {
-            let restart_button_y = this.restart_button.isPressed ? this.restart_button.y_pressed : this.restart_button.y;
-            let home_button_y = this.home_button.isPressed ? this.home_button.y_pressed : this.home_button.y;
 
             ctx.drawImage(
                             sprite_sheet, 
@@ -1002,20 +1033,6 @@ const gameOver =
                             this.scoreboard.spriteW, this.scoreboard.spriteH, 
                             this.scoreboard.x, this.scoreboard.y, 
                             this.scoreboard.w, this.scoreboard.h
-                         );
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.restart_button.spriteX, this.restart_button.spriteY, 
-                            this.restart_button.spriteW, this.restart_button.spriteH, 
-                            this.restart_button.x, restart_button_y, 
-                            this.restart_button.w, this.restart_button.h
-                         );
-            ctx.drawImage(
-                            sprite_sheet, 
-                            this.home_button.spriteX, this.home_button.spriteY, 
-                            this.home_button.spriteW, this.home_button.spriteH, 
-                            this.home_button.x, home_button_y, 
-                            this.home_button.w, this.home_button.h
                          );
         }
     }
@@ -1357,12 +1374,6 @@ function canvasScale()
     home.bird.y = cvs.height * 0.294;
     home.bird.w = cvs.width * 0.117;
     home.bird.h = cvs.height * 0.059;
-    // Start Button
-    home.start_button.x = cvs.width * 0.359;
-    home.start_button.y = cvs.height * 0.759;
-    home.start_button.y_pressed = cvs.height * 0.763;
-    home.start_button.w = cvs.width * 0.276;
-    home.start_button.h = cvs.height * 0.068;
     // Studio Name
     home.studio_name.x = cvs.width * 0.171;
     home.studio_name.y = cvs.height * 0.897;
@@ -1381,13 +1392,31 @@ function canvasScale()
     getReady.tap.w = cvs.width * 0.270;
     getReady.tap.h = cvs.height * 0.244;
 
-    // GAME BUTTONS
+    // GAME BUTTONS 
     // Pause, Resume, Mute and Unmute buttons
     gameButtons.x = cvs.width * 0.087;
     gameButtons.y = cvs.height * 0.045;
     gameButtons.y_pressed = cvs.height * 0.049;
     gameButtons.w = cvs.width * 0.088;
-    gameButtons.h = cvs.height * 0.069; 
+    gameButtons.h = cvs.height * 0.069;
+    // Start Button
+    gameButtons.start_button.x = cvs.width * 0.359;
+    gameButtons.start_button.y = cvs.height * 0.759;
+    gameButtons.start_button.y_pressed = cvs.height * 0.763;
+    gameButtons.start_button.w = cvs.width * 0.276;
+    gameButtons.start_button.h = cvs.height * 0.068;
+    // Restart button
+    gameButtons.restart_button.x = cvs.width * 0.147;
+    gameButtons.restart_button.y = cvs.height * 0.759;
+    gameButtons.restart_button.y_pressed = cvs.height * 0.763;
+    gameButtons.restart_button.w = cvs.width * 0.276;
+    gameButtons.restart_button.h = cvs.height * 0.068;
+    // Home button
+    gameButtons.home_button.x = cvs.width * 0.576;
+    gameButtons.home_button.y = cvs.height * 0.759;
+    gameButtons.home_button.y_pressed = cvs.height * 0.763;
+    gameButtons.home_button.w = cvs.width * 0.276;
+    gameButtons.home_button.h = cvs.height * 0.068;
 
     // GAME OVER
     // "Game Over" message
@@ -1400,18 +1429,6 @@ function canvasScale()
     gameOver.scoreboard.y = cvs.height * 0.355;
     gameOver.scoreboard.w = cvs.width * 0.782;
     gameOver.scoreboard.h = cvs.height * 0.289;
-    // Restart button
-    gameOver.restart_button.x = cvs.width * 0.147;
-    gameOver.restart_button.y = cvs.height * 0.759;
-    gameOver.restart_button.y_pressed = cvs.height * 0.763;
-    gameOver.restart_button.w = cvs.width * 0.276;
-    gameOver.restart_button.h = cvs.height * 0.068;
-    // Home button
-    gameOver.home_button.x = cvs.width * 0.576;
-    gameOver.home_button.y = cvs.height * 0.759;
-    gameOver.home_button.y_pressed = cvs.height * 0.763;
-    gameOver.home_button.w = cvs.width * 0.276;
-    gameOver.home_button.h = cvs.height * 0.068;
 
     // SCORE
     // New best score label
