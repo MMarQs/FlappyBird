@@ -15,7 +15,7 @@ const DEGREE = Math.PI/180;
 const sprite_sheet = new Image();
 sprite_sheet.src = "img/sprite_sheet.png"
 
-// LOAD unmuteS
+// LOAD SOUNDS
 const DIE = new Audio();
 DIE.src = "audio/die.wav";
 
@@ -171,6 +171,7 @@ document.addEventListener("keydown", function(event)
         if (state.current == state.game && !pPressed) 
         {
             gamePaused = !gamePaused;
+            gameButtons.isPressed = true;
             pPressed = true;
         }
     }          
@@ -185,6 +186,7 @@ document.addEventListener("keyup", function(event)
     } 
     else if (event.key === "p" && state.current == state.game)
     {
+        gameButtons.isPressed = false;
         pPressed = false;  
     }  
 });
@@ -204,16 +206,26 @@ cvs.addEventListener("mousedown", function(event)
             if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
                 clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
             {
-                // If player is clicking on Mute or Unmute Button
+                // If player is clicking on Mute or Unmute button
                 gameButtons.isPressed = true;
             } 
             // Start button
             else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
                     clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
             {
-                // If player is clicking on Start Button
+                // If player is clicking on Start button
                 gameButtons.start_button.isPressed = true;
             } 
+            break;
+        case state.game:
+            mouseDown = true;
+            // Pause or Resume button
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If player is clicking on Pause or Resume button
+                gameButtons.isPressed = true;
+            }
             break;
         case state.gameOver:
             mouseDown = true;
@@ -252,7 +264,7 @@ cvs.addEventListener("mouseup", function(event)
             if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
                 clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
             {
-                // If player stops clicking on Mute or Unmute Button
+                // If player stops clicking on Mute or Unmute button
                 gameButtons.isPressed = false;
             }  
             // Start button
@@ -261,6 +273,16 @@ cvs.addEventListener("mouseup", function(event)
             {
                 // If player stops clicking on Home button
                 gameButtons.start_button.isPressed = false;
+            }
+            break;
+        case state.game:
+            mouseDown = false;
+            // Pause or Resume button
+            if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If players stops clicking on Pause or Resume button
+                gameButtons.isPressed = false;
             }
             break;
         case state.gameOver:
@@ -301,12 +323,12 @@ cvs.addEventListener("mousemove", function(event)
                 if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
                 {
-                    // If player is clicking and goes to Mute or Unmute Button
+                    // If player is clicking and goes to Mute or Unmute button
                     gameButtons.isPressed = true;
                 }  
                 else
                 {
-                    // If player is clicking and goes away from Mute or Unmute Button
+                    // If player is clicking and goes away from Mute or Unmute button
                     gameButtons.isPressed = false;
 
                 }
@@ -314,13 +336,30 @@ cvs.addEventListener("mousemove", function(event)
                 if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
                    clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
                 {
-                    // If player is clicking and goes to Start Button
+                    // If player is clicking and goes to Start button
                     gameButtons.start_button.isPressed = true;
                 }
                 else
                 {
-                    // If player is clicking and goes away from Start Button
+                    // If player is clicking and goes away from Start button
                     gameButtons.start_button.isPressed = false;
+                }
+            }
+            break;
+        case state.game:
+            if(mouseDown)
+            {
+                // Pause or Resume button
+                if (clickX >= gameButtons.x && clickX <= gameButtons.x + gameButtons.w &&
+                    clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+                {
+                    // If player is clicking and goes to Pause or Resume button
+                    gameButtons.isPressed = true;
+                }
+                else
+                {
+                    // If players is clicking and goes away from Pause or Resume button
+                    gameButtons.isPressed = false;
                 }
             }
             break;
@@ -331,12 +370,12 @@ cvs.addEventListener("mousemove", function(event)
                 if(clickX >= gameButtons.restart_button.x && clickX <= gameButtons.restart_button.x + gameButtons.restart_button.w &&
                    clickY >= gameButtons.restart_button.y && clickY <= gameButtons.restart_button.y + gameButtons.restart_button.h)
                 {
-                    // If player is clicking and goes to Restart Button
+                    // If player is clicking and goes to Restart button
                     gameButtons.restart_button.isPressed = true;
                 }
                 else
                 {
-                    // If player is clicking and goes away from Restart Button
+                    // If player is clicking and goes away from Restart button
                     gameButtons.restart_button.isPressed = false;
                 }
             }
@@ -346,12 +385,12 @@ cvs.addEventListener("mousemove", function(event)
                 if(clickX >= gameButtons.home_button.x && clickX <= gameButtons.home_button.x + gameButtons.home_button.w &&
                    clickY >= gameButtons.home_button.y && clickY <= gameButtons.home_button.y + gameButtons.home_button.h)
                 {
-                    // If player is clicking and goes to Home Button
+                    // If player is clicking and goes to Home button
                     gameButtons.home_button.isPressed = true;
                 }
                 else
                 {
-                    // If player is clicking and goes away from Home Button
+                    // If player is clicking and goes away from Home button
                     gameButtons.home_button.isPressed = false;
                 }
             }
@@ -887,7 +926,7 @@ const gameButtons =
     home_button : 
     {
         spriteX: 388, spriteY: 171, 
-        spriteW: 160, spriteH: 59,
+        spriteW: 160, spriteH: 56,
         x: 0, y: 0, 
         w: 0, h: 0,
         y_pressed : 0,
@@ -961,7 +1000,7 @@ const gameButtons =
                                 sprite_sheet, 
                                 this.pause_button.spriteX, this.pause_button.spriteY, 
                                 this.pause_button.spriteW, this.pause_button.spriteH, 
-                                this.x, this.y, 
+                                this.x, button_y, 
                                 this.w, this.h
                              );
             }
@@ -971,7 +1010,7 @@ const gameButtons =
                                 sprite_sheet, 
                                 this.resume_button.spriteX, this.resume_button.spriteY, 
                                 this.resume_button.spriteW, this.resume_button.spriteH, 
-                                this.x, this.y, 
+                                this.x, button_y, 
                                 this.w, this.h
                              ); 
             }
