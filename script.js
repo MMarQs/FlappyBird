@@ -9,6 +9,7 @@ let gamePaused = false;
 let pPressed = false;
 let mouseDown = false;
 let mute = false;
+let night = false;
 const DEGREE = Math.PI/180;
 
 // LOAD SPRITE SHEET
@@ -62,7 +63,18 @@ cvs.addEventListener("click", function(event)
                     SWOOSH.currentTime = 0;
                     SWOOSH.play();
                 }
-            } 
+            }
+            // Night or Day button
+            else if (clickX >= gameButtons.night_button.x && clickX <= gameButtons.night_button.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                night = !night;
+                if(!mute)
+                {
+                    SWOOSH.currentTime = 0;
+                    SWOOSH.play();
+                }
+            }  
             // Start button
             else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
                     clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
@@ -209,6 +221,13 @@ cvs.addEventListener("mousedown", function(event)
                 // If player is clicking on Mute or Unmute button
                 gameButtons.isPressed = true;
             } 
+            // Night or Day button
+            else if (clickX >= gameButtons.night_button.x && clickX <= gameButtons.night_button.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If player is clicking on Night or Day button
+                gameButtons.night_button.isPressed = true;
+            } 
             // Start button
             else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
                     clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
@@ -267,6 +286,13 @@ cvs.addEventListener("mouseup", function(event)
                 // If player stops clicking on Mute or Unmute button
                 gameButtons.isPressed = false;
             }  
+            // Night or Day button
+            else if (clickX >= gameButtons.night_button.x && clickX <= gameButtons.night_button.x + gameButtons.w &&
+                     clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+            {
+                // If player stops clicking on Night or Day button
+                gameButtons.night_button.isPressed = false;
+            } 
             // Start button
             else if(clickX >= gameButtons.start_button.x && clickX <= gameButtons.start_button.x + gameButtons.start_button.w &&
                     clickY >= gameButtons.start_button.y && clickY <= gameButtons.start_button.y + gameButtons.start_button.h)
@@ -330,6 +356,19 @@ cvs.addEventListener("mousemove", function(event)
                 {
                     // If player is clicking and goes away from Mute or Unmute button
                     gameButtons.isPressed = false;
+
+                }
+                // Night or Day button
+                if (clickX >= gameButtons.night_button.x && clickX <= gameButtons.night_button.x + gameButtons.w &&
+                    clickY >= gameButtons.y && clickY <= gameButtons.y + gameButtons.h) 
+                {
+                    // If player is clicking and goes to Night or Day button
+                    gameButtons.night_button.isPressed = true;
+                } 
+                else
+                {
+                    // If player is clicking and goes away from Night or Day button
+                    gameButtons.night_button.isPressed = false;
 
                 }
                 // Start button
@@ -401,7 +440,8 @@ cvs.addEventListener("mousemove", function(event)
 // BACKGROUND
 const background = 
 {
-    spriteX : 0,
+    day_spriteX   : 0,
+    night_spriteX : 1211,
     spriteY : 392,
     spriteW : 552,
     spriteH : 408,
@@ -410,15 +450,37 @@ const background =
     w : 0,
     h : 0,
 
+    stars : 
+    {
+        spriteX : 1211,
+        spriteY : 0,
+        spriteW : 552,
+        spriteH : 392,
+        y: 0,
+        h : 0
+    },
+
     draw : function() 
     {
+        let spriteX = night ? this.night_spriteX : this.day_spriteX;
+
         ctx.drawImage(
                         sprite_sheet, 
-                        this.spriteX, this.spriteY, 
+                        spriteX, this.spriteY, 
                         this.spriteW, this.spriteH, 
                         this.x, this.y, 
                         this.w, this.h
                      );
+        if(night)
+        {
+            ctx.drawImage(
+                            sprite_sheet, 
+                            this.stars.spriteX, this.stars.spriteY, 
+                            this.stars.spriteW, this.stars.spriteH, 
+                            this.x, this.stars.y, 
+                            this.w, this.stars.h
+                         );
+        }
     }
 }
 
@@ -943,7 +1005,23 @@ const gameButtons =
         isPressed : false
     },
 
-    // Variables common to Pause, Resume, Mute and Unmute buttons as they have the same dimensions and positions
+    night_button :
+    {
+        spriteX: 280, spriteY: 171, 
+        spriteW: 56, spriteH: 60,
+        x: 0,
+        isPressed : false
+    },
+
+    day_button :
+    {
+        spriteX: 223, spriteY: 171, 
+        spriteW: 56, spriteH: 60,
+        x: 0,
+        isPressed : false
+    },
+
+    // Variables common to Pause, Resume, Mute, Unmute, Night and Day buttons as they have the same dimensions and positions
     x: 0, 
     y: 0, 
     w: 0, 
@@ -955,6 +1033,8 @@ const gameButtons =
     {
         // Pause, Resume, Mute or Unmute button
         let button_y = this.isPressed ? this.y_pressed : this.y;
+        // Night or Day button
+        let night_button_y = this.night_button.isPressed ? this.y_pressed : this.y;
         // Start Button
         let start_button_y = this.start_button.isPressed ? this.start_button.y_pressed : this.start_button.y;
         // Restart button
@@ -983,7 +1063,29 @@ const gameButtons =
                                 this.x, button_y, 
                                 this.w, this.h
                              ); 
-            }            
+            } 
+
+            if(!night)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.day_button.spriteX, this.day_button.spriteY, 
+                                this.day_button.spriteW, this.day_button.spriteH, 
+                                this.night_button.x, night_button_y, 
+                                this.w, this.h
+                             );
+            }
+            else if(night)
+            {
+                ctx.drawImage(
+                                sprite_sheet, 
+                                this.night_button.spriteX, this.night_button.spriteY, 
+                                this.night_button.spriteW, this.night_button.spriteH, 
+                                this.night_button.x, night_button_y, 
+                                this.w, this.h
+                             );
+            }  
+                       
             ctx.drawImage(
                             sprite_sheet, 
                             this.start_button.spriteX, this.start_button.spriteY, 
@@ -1362,6 +1464,9 @@ function canvasScale()
     background.y = cvs.height * 0.631;
     background.w = cvs.width;
     background.h = background.w * 0.74;
+    //Stars for night mode
+    background.stars.y = background.y * 0.167;
+    background.stars.h = cvs.height - background.h;
 
     // FOREGROUND
     foreground.x = 0;
@@ -1432,12 +1537,14 @@ function canvasScale()
     getReady.tap.h = cvs.height * 0.244;
 
     // GAME BUTTONS 
-    // Pause, Resume, Mute and Unmute buttons
+    // Pause, Resume, Mute, Unmute, Night and Day buttons
     gameButtons.x = cvs.width * 0.087;
     gameButtons.y = cvs.height * 0.045;
     gameButtons.y_pressed = cvs.height * 0.049;
     gameButtons.w = cvs.width * 0.088;
     gameButtons.h = cvs.height * 0.069;
+    // Night or Day button's x
+    gameButtons.night_button.x = cvs.width * 0.189;
     // Start Button
     gameButtons.start_button.x = cvs.width * 0.359;
     gameButtons.start_button.y = cvs.height * 0.759;
@@ -1527,7 +1634,7 @@ window.addEventListener("load", () => {
 function draw() 
 {
     // Background color of canvas 
-    ctx.fillStyle = "#7BC5CD"; 
+    ctx.fillStyle = !night ? "#7BC5CD" : "#12284C"; 
     ctx.fillRect(0, 0, cvs.width, cvs.height); 
 
     background.draw();
