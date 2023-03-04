@@ -37,7 +37,7 @@ The bird's collision with the pipes or foreground is performed every frame. If t
 
 
 ## Game States
-- **Home** - Game's initial state, where the player can start the game.
+- **Home** - Game's initial state, where the player can start the game, mute or unmute the sound and activate or deactivate the night mode.
 - **Get Ready** - Where the player is about to start the game.
 - **Game** - Game's main state, where the player flies with the bird. In this state the player must avoid colliding with a set of pipes or with the foreground and try to get the best score.
 - **Game Over** - The game is over because the player collided with a pipe or with the foreground. In this state the player's score and best score are shown with the option to restart the game or to return to Home state.
