@@ -48,11 +48,12 @@ The bird's collision with the pipes or foreground is performed every frame. If t
 
 ## Game controls
 #### Mouse
-All buttons in the game can be clicked with the mouse.
+- All buttons in the game can be clicked with the mouse.
 #### Keyboard
-During the game state, you can use the following keyboard controls:
-- ```space``` - Make the bird flap
-- ```p``` - Pause/Resume the game
+- You can use the ```n``` key at any time to activate/deactivate the site's night mode.
+- During the game state, you can use the following keys:
+    - ```space``` - Make the bird flap
+    - ```p``` - Pause/Resume the game
 
 
 ## Acknowledgements
