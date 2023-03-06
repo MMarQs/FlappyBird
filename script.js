@@ -7,6 +7,7 @@ let frames = 0;
 let birdFlapped = false;
 let gamePaused = false;
 let pPressed = false;
+let nWasPressed = false;
 let mouseDown = false;
 let mute = false;
 let night = false;
@@ -178,7 +179,7 @@ document.addEventListener("keydown", function(event)
                 break;
         } 
     }
-    else if (event.key === "p") 
+    else if (event.key === "p" || event.key === "P") 
     {
         if (state.current == state.game && !pPressed) 
         {
@@ -186,7 +187,11 @@ document.addEventListener("keydown", function(event)
             gameButtons.isPressed = true;
             pPressed = true;
         }
-    }          
+    } 
+    else if (event.key === "n" || event.key === "N") 
+    {
+        document.body.style.backgroundColor = nWasPressed ?  "#FFF" : "#123";
+    }         
 });
 
 // Control when the player stops pressing a key
@@ -196,11 +201,15 @@ document.addEventListener("keyup", function(event)
     {
         birdFlapped = false;
     } 
-    else if (event.key === "p" && state.current == state.game)
+    else if (event.key === "p" || event.key === "P" && state.current == state.game)
     {
         gameButtons.isPressed = false;
         pPressed = false;  
     }  
+    else if (event.key === "n" || event.key === "N") 
+    {
+        nWasPressed = !nWasPressed;
+    }
 });
 
 // Control when the player clicks the left mouse button
