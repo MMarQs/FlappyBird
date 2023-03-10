@@ -31,7 +31,7 @@ It is important to mention that since the canvas origin is in the upper left cor
 - ```canvasScale()``` - It's responsible for adjusting the canvas size according to the browser's window size, using the ```clientWidth``` and ```clientHeight``` properties of the document object. In addition, it also sets the canvas scale so that the graphic elements are drawn with the same proportion in different resolutions. This function is called when the window is loaded or resized.
 
 ### Collisions
-Explicit hitboxes weren't used to detect collisions. Instead, it was checked if the ```x``` and ```y``` coordinates of the bird were overlappinping the pipes or foreground x and y coordinates.
+Explicit hitboxes weren't used to detect collisions. Instead, a check was made to evaluate whether or not the bird's ```x``` and ```y``` coordinates  were overlappinping the pipes or foreground ```x``` and ```y``` coordinates.
 
 The bird's collision with the pipes or foreground is performed every frame. If the bird's position overlaps any part of the pipes or foreground, a collision is detected. In this case, the game ends.
 
